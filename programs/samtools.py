@@ -4,7 +4,7 @@ import formats
 from pipeline import create_program
 
 
-def sort(align, params=None, output):
+def sort(align, output, params=None):
     if type(align) != formats.Bam:
         sys.error(align.path + " must be in BAM format");
     cmd = ["samtools", "sort"] + [output]
