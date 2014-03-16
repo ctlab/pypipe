@@ -19,12 +19,9 @@ def sort(align, output, params=None):
     cmd = ["samtools", "sort", align.path, output]
     if params:
         params = params.split(" ")
-        try:
-            params.remove("-o")
-        except ValueError:
-            pass
+        params = filter(lambda p: p != "-o", params)
+        params = map(lambda p: p.replace("o", ""), params)
         cmd += params
     program = create_program(cmd, [align])
     return formats.Bam(output, program)
-
 
