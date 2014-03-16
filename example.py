@@ -1,5 +1,5 @@
 from formats import Fasta, Fastq
-from programs import bwa, samtools, test
+from tools import bwa, samtools, test
 from pipeline import run_pipeline
 
 #bwa.bwasw(Fasta("ref"), Fastq("read"), "out.sam")
