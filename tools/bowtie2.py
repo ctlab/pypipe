@@ -4,50 +4,27 @@ import formats
 from pipeline import create_program
 
 
-def unpaired(index, reads, output, params=None):
-    """ bowtie2 [options]* -x <bt2-idx> -U r -S <res>
-
-    For example: bowtie2 -x "index" -U read1.fq, read2.fq -S out.bam
-    index = BowtieIndex("index")
-    reads = [Fastq("read1.fq"), Fastq("read2.fq")]
-    out_sam = bowtie2.unpaired(index=index, reads=reads, output="out.sam")
-
-    This function returns SAM file
-
-    """
-    for read in reads:
-        if type(read) != formats.Fastq:
-            msg = "bowtie2: " + read.path + " must be in FASTQ format"
-            sys.exit(msg)
-    reads_arg = ",".join([read.path for read in reads])
-    cmd = ["bowtie2", "-x", index.path, "-U", reads_arg, "-S", output] 
-    # params ...
-    program = create_program(cmd, reads)
-    return formats.Sam(output, program)
-
-
-def paired(index, reads1, reads2, output, params=None):
-    """ bowtie2 [options]* -x <bt2-idx> -1 <m1> -2 <m2> -S <res>
-
-    For example: bowtie2 -x "index" -1 "read1.fq" -2 "read2.fq" -S "out.bam"
-    index = BowtieIndex("index")
-    reads1 = [Fastq("read1.fq")]
-    reads2 = [Fastq("read2.fq")]
-    bowtie2.paired(index=index, reads1=reads1, reads2=reads2, output="out.sam")
-
-    This function returns SAM file
-
-    """
-    reads = reads1 + reads2
-    for read in reads:
-        if type(read) != formats.Fastq:
-            msg = "bowtie2: " + read.path + " must be in FASTQ format"
-            sys.exit(msg)
-    reads1_arg = ",".join([read.path for read in reads1])
-    reads2_arg = ",".join([read.path for read in reads2])
-    cmd = ["bowtie2", "-x", index.path, "-1", reads1_arg,
-           "-2", reads2_arg, "-S", output]
-    # params ...
-    program = create_program(cmd, reads)
-    return formats.Sam(output, program)
-
+def bowtie2(x, S, U=None, r1=None, r2=None):
+    if (U and r1) or (U and r2) or (not U and not (r1 and r2)):
+        sys.exit("bowtie2: Wrong arguments. Use only 'U' or only 'r1' 'r2'")
+    if type(x) != formats.Bowtie2Index:
+        sys.exit("bowtie2: x argument must be Bowtie2Index")
+    if type(S) != str:
+        sys.exit("bowtie2: S argument must be string")
+    if U:
+        if type(U) != formats.Fastq:
+            sys.exit("bowtie2: U argument must be in FASTQ format")
+    else:
+        if type(r1) != formats.Fastq:
+            sys.exit("bowtie2: r1 argument must be in FASTQ format")
+        if type(r2) != formats.Fastq:
+            sys.exit("bowtie2: r2 argument must be in FASTQ format")
+    if U:
+        cmd = ["bowtie2", "-x", x.path, "-U", U.path, "-S", S]
+    else:
+        cmd = ["bowtie2", "-x", x.path, "-1", r1.path, "-2", r2.path, "-S", S]
+    if U:
+        program = create_program(cmd, [U])
+    else:
+        program = create_program(cmd, [r1, r2])
+    return formats.Sam(S, program)

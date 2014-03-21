@@ -53,7 +53,7 @@ class Vcf(Format):
         super(Vcf, self).__init__(path, program)
 
 
-class BowtieIndex(Format):
+class Bowtie2Index(Format):
 
     def __init__(self, path, program=None):
-        super(BowtieIndex, self).__init__(path, program)
+        super(Bowtie2Index, self).__init__(path, program)
