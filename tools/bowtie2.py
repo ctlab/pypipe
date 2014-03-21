@@ -133,6 +133,10 @@ def bowtie2(x, S, U=None, r1=None, r2=None, q=None, qseq=None, f=None,
 
     # Creating program
     print " ".join(cmd)
-    files_array = U and U or r1 + r2
+    if not c:
+        files_array = U and U or r1 + r2
+    else:
+        files_array = []
+    files_array.append(x)
     program = create_program(cmd, files_array)
     return formats.Sam(S, program)
