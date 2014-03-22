@@ -68,5 +68,10 @@ class Bowtie2Index(Format):
         super(Bowtie2Index, self).__init__(path, program)
 
     def check(self):
-        pass
+        files = [".1", ".2", ".3", ".4", ".rev.1", ".rev.2"]
+        files = [self.path + f + ".bt2" for f in files]
+        for f in files:
+            if not os.path.isfile(f):
+                sys.exit("File " + f + " doesn't exist")
+
 
