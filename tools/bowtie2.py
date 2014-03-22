@@ -4,6 +4,9 @@ import formats
 from pipeline import create_program
 
 
+# TODO r?
+# TODO -o / --offrate 
+# TODO output options
 def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
             r=None, c=None, s=None, skip=None, u=None, qupto=None,
             trim5=None, _5=None, trim3=None, _3=None, phred33=None,
@@ -13,8 +16,8 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
             very_sensitive_local=None, N=None, L=None, i=None, n_ceil=None,
             dpad=None, gbar=None, ignore_quals=None, nofw=None, norc=None,
             no_1mm_upfront=None, end_to_end=None, local=None, ma=None,
-            mp=None, np=None, rdg=None, rfg=None, score_min=None k=None,
-            a=None, D=None, R=None, l=None, minins=None, X=None, maxins=None,
+            mp=None, np=None, rdg=None, rfg=None, score_min=None, k=None,
+            a=None, D=None, R=None, I=None, minins=None, X=None, maxins=None,
             fr=None, rf=None, ff=None, no_mixed=None, no_discordant=None,
             dovetail=None, no_contain=None, no_overlap=None, t=None,
             time=None, un=None, un_gz=None, un_bz2=None, al=None, al_gz=None,
@@ -38,14 +41,14 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
         sys.exit("bowtie2: use only '_5' or 'trim5'")
     if _3 and trim3:
         sys.exit("bowtie2: use only '_3' or 'trim3'")
-    if l and minins:
-        sys.exit("bowtie2: use only 'l' or 'minins'")
+    if I and minins:
+        sys.exit("bowtie2: use only 'I' or 'minins'")
     if X and maxins:
         sys.exit("bowtie2: use only 'X' or 'maxins'")
     if o and offrate:
-        sys.exit("bowtie2: ise only 'o' or 'offrate'")
+        sys.exit("bowtie2: use only 'o' or 'offrate'")
     if p and threads:
-        sys.exit("bowtie2: ise only 'p' or 'threads'")
+        sys.exit("bowtie2: use only 'p' or 'threads'")
 
 
     # Checking types
@@ -89,19 +92,21 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
         sys.exit("bowtie2: 'R' argument must be int")
     if ma and type(ma) != int:
         sys.exit("bowtie2: 'ma' argument must be int")
-    if mp and (type(mp[0]) != int or type(mp[1]) != int):
+    if mp and (type(mp) != tuple or type(mp[0]) != int or type(mp[1]) != int):
         sys.exit("bowtie2: 'mp' argument must be tuple of two int")
     if np and type(np) != int:
         sys.exit("bowtie2: 'np' argument must be int")
-    if rdg and (type(rdg[0]) != int or type(rdg[1]) != int):
+    if rdg and (type(rdg) != tuple or
+            type(rdg[0]) != int or type(rdg[1]) != int):
         sys.exit("bowtie2: 'rdg' argument must be tuple of two int")
-    if rfg and (type(rfg[0]) != int or type(rfg[1]) != int):
+    if rfg and (type(rfg) != tuple or
+            type(rfg[0]) != int or type(rfg[1]) != int):
         sys.exit("bowtie2: 'rfg' argument must be tuple of two int")
     if score_min and type(score_min) != str:
         sys.exit("bowtie2: 'score_min' argument must be string")
-    if l and type(l) != int:
-        sys.exit("bowtie2: 'l' argument must be int")
-    if minins and type(minis) != int:
+    if I and type(I) != int:
+        sys.exit("bowtie2: 'I' argument must be int")
+    if minins and type(minins) != int:
         sys.exit("bowtie2: 'minins' argument must be int")
     if X and type(X) != int:
         sys.exit("bowtie2: 'X' argument must be int")
@@ -152,11 +157,18 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
 
     # Generating basic command
     if U:
-        reads = ",".join([read.path for read in U])
+        if c:
+            reads = ",".join(U)
+        else:
+            reads = ",".join([read.path for read in U])
         cmd = ["bowtie2", "-x", x.path, "-U", reads, "-S", S]
     else:
-        reads1 = ",".join([read.path for read in _1])
-        reads2 = ",".join([read.path for read in _2])
+        if c:
+            reads1 = ",".join(_1)
+            reads2 = ",".join(_2)
+        else:
+            reads1 = ",".join([read.path for read in _1])
+            reads2 = ",".join([read.path for read in _2])
         cmd = ["bowtie2", "-x", x.path, "-1", reads1, "-2", reads2, "-S", S]
 
     # Adding options
@@ -277,9 +289,9 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     if score_min:
         cmd.append("--score-min")
         cmd.append(score_min)
-    if l:
-        cmd.append("-l")
-        cmd.append(str(l))
+    if I:
+        cmd.append("-I")
+        cmd.append(str(I))
     elif minins:
         cmd.append("--minins")
         cmd.append(str(minins))
@@ -321,16 +333,16 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
         cmd.append("--omit-sec-seq")
     if o:
         cmd.append("-o")
-        cmd.append(o)
+        cmd.append(str(o))
     if offrate:
         cmd.append("--offrate")
-        cmd.append(offrate)
+        cmd.append(str(offrate))
     if p:
         cmd.append("-p")
-        cmd.append(p)
+        cmd.append(str(p))
     if threads:
         cmd.append("--threads")
-        cmd.append(threads)
+        cmd.append(str(threads))
     if reorder:
         cmd.append("--reorder")
     if mm:
@@ -339,9 +351,9 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
         cmd.append("--qc-filter")
     if seed:
         cmd.append("--seed")
-        cmd.append(seed)
+        cmd.append(str(seed))
     if non_deterministic:
-        cmd.append("--no-deterministic")
+        cmd.append("--non-deterministic")
 
     # Creating program
     print " ".join(cmd)

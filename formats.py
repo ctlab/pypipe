@@ -9,9 +9,9 @@ class Format(object):
         if not program:
             self.check()
 
-    def check()
-        if not os.path.isfile(path):
-            sys.exit("File " + path + " doesn't exist")
+    def check(self):
+        if not os.path.isfile(self.path):
+            sys.exit("File " + self.path + " doesn't exist")
 
 
 class Fastq(Format):
@@ -67,5 +67,6 @@ class Bowtie2Index(Format):
     def __init__(self, path, program=None):
         super(Bowtie2Index, self).__init__(path, program)
 
-    def check()
+    def check(self):
         pass
+
