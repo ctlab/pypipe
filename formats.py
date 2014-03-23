@@ -68,6 +68,12 @@ class Vcf(Format):
         super(Vcf, self).__init__(path, program)
 
 
+class Bed(Format):
+    
+    def __init__(self, path, program=None):
+        super(Bed, self).__init__(path, program)
+
+
 class Bowtie2Index(Format):
 
     def __init__(self, path, program=None):

@@ -87,4 +87,113 @@ def sort(align, out, n=None, m=None):
         cmd.append(str(m))
     print " ".join(cmd)
     program = create_program(cmd, [align])
-    return formats.Bam(out, program)
+    return formats.Bam(out + ".bam", program)
+
+
+def mpileup(align, out, _6=None, A=None, B=None, b=None, C=None, d=None,
+            E=None, f=None, l=None, q=None, Q=None, r=None, D=None, g=None,
+            S=None, u=None, e=None, h=None, I=None, L=None, o=None, P=None):
+    if type(align) != formats.Bam:
+        sys.exit("samtools mpileup: 'align' must be BAM file")
+    if type(out) != str:
+        sys.exit("samtools mpileup: 'out' must be string")
+    if b and type(b) != formats.Unknown:
+        sys.exit("samtools mpileup: 'b' must be Unknown file")
+    if C and type(C) != int:
+        sys.exit("samtools mpileup: 'C' must be int")
+    if d and type(d) != int:
+        sys.exit("samtools mpileup: 'd' must be int")
+    if f and type(f) != formats.Fasta:
+        sys.exit("samtools mpileup: 'f' must be FASTA file")
+    if l and type(l) != formats.Bed:
+        sys.exit("samtools mpileup: 'l' must be BED file")
+    if q and type(q) != int:
+        sys.exit("samtools mpileup: 'q' must be int")
+    if Q and type(Q) != int:
+        sys.exit("samtools mpileup: 'Q' must be int")
+    if r and type(r) != str:
+        sys.exit("samtools mpileup: 'w' must be string")
+    if e and type(e) != int:
+        sys.exit("samtools mpileup: 'e' must be int")
+    if h and type(h) != int:
+        sys.exit("samtools mpileup: 'h' must be int")
+    if L and type(L) != int:
+        sys.exit("samtools mpileup: 'L' must be int")
+    if o and type(o) != int:
+        sys.exit("samtools mpileup: 'o' must be int")
+    if P and type(P) != str:
+        sys.exit("samtools mpileup: 'P' must be string")
+    cmd = ["samtools", "mpileup", align.path]
+    files_array = [align]
+    if _6:
+        cmd.append("-6")
+    if B:
+        cmd.append("-B")
+    if b:
+        cmd.append("-b")
+        cmd.append(b.path)
+        files_array.append(b)
+    if C:
+        cmd.append("-C")
+        cmd.append(str(C))
+    if d:
+        cmd.append("-d")
+        cmd.append(str(d))
+    if E:
+        cmd.append("-E")
+    if f:
+        cmd.append("-f")
+        cmd.append(f.path)
+        files_array.append(f)
+    if l:
+        cmd.append("-l")
+        cmd.append(l.path)
+        files_array.append(l)
+    if q:
+        cmd.append("-q")
+        cmd.append(str(q))
+    if Q:
+        cmd.append("-Q")
+        cmd.append(str(Q))
+    if r:
+        cmd.append("-r")
+        cmd.append(Q)
+    if D:
+        cmd.append("-D")
+    if g:
+        cmd.append("-g")
+    if S:
+        cmd.append("-S")
+    if u:
+        cmd.append("-u")
+    if e:
+        cmd.append("-e")
+        cmd.append(str(e))
+    if h:
+        cmd.append("-h")
+        cmd.append(str(h))
+    if I:
+        cmd.append("-I")
+    if L:
+        cmd.append("-L")
+        cmd.append(str(L))
+    if o:
+        cmd.append("-o")
+        cmd.append(str(o))
+    if P:
+        cmd.append("-P")
+        cmd.append(P)
+    print " ".join(cmd)
+    program = create_program(cmd, files_array, out)
+    return formats.Bcf(out, program)
+
+
+
+
+
+
+
+
+
+
+
