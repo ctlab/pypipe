@@ -93,8 +93,12 @@ def sort(align, out, n=None, m=None):
 def mpileup(align, out, _6=None, A=None, B=None, b=None, C=None, d=None,
             E=None, f=None, l=None, q=None, Q=None, r=None, D=None, g=None,
             S=None, u=None, e=None, h=None, I=None, L=None, o=None, P=None):
-    if type(align) != formats.Bam:
-        sys.exit("samtools mpileup: 'align' must be BAM file")
+    if type(align) == tuple or type(align) == list:
+        for elem in align:
+            if type(elem) != formats.Bam:
+                sys.exit("samtools mpileup: 'align' must array of BAM files")
+    else:
+        sys.exit("samtools mpileup: 'align' must array of BAM files")
     if type(out) != str:
         sys.exit("samtools mpileup: 'out' must be string")
     if b and type(b) != formats.Unknown:
@@ -123,8 +127,8 @@ def mpileup(align, out, _6=None, A=None, B=None, b=None, C=None, d=None,
         sys.exit("samtools mpileup: 'o' must be int")
     if P and type(P) != str:
         sys.exit("samtools mpileup: 'P' must be string")
-    cmd = ["samtools", "mpileup", align.path]
-    files_array = [align]
+    cmd = ["samtools", "mpileup"] + [elem.path for elem in align]
+    files_array = align
     if _6:
         cmd.append("-6")
     if B:
@@ -186,14 +190,4 @@ def mpileup(align, out, _6=None, A=None, B=None, b=None, C=None, d=None,
     print " ".join(cmd)
     program = create_program(cmd, files_array, out)
     return formats.Bcf(out, program)
-
-
-
-
-
-
-
-
-
-
 
