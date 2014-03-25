@@ -4,7 +4,7 @@ import formats
 from pipeline import create_program
 
 
-# TODO r?
+# TODO -r - unknown format
 # TODO -o / --offrate 
 # TODO output options
 def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
@@ -53,79 +53,91 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
 
     # Checking types
     if type(x) != formats.Bowtie2Index:
-        sys.exit("bowtie2: 'x' argument must be Bowtie2Index")
+        sys.exit("bowtie2: 'x' argument must be a Bowtie2Index")
     if type(S) != str:
-        sys.exit("bowtie2: 'S' argument must be string")
+        sys.exit("bowtie2: 'S' argument must be a string")
+    if U and type(U) != tuple and type(U) != list:
+        sys.exit("bowtie2: 'U' argument must be an array")
+    if len(U) < 1:
+        sys.exit("bowtie2: 'U' length must be >= 1")
+    if _1 and type(_1) != tuple and type(_1) != list:
+        sys.exit("bowtie2: '_1' argument must be an array")
+    if len(_1) < 1:
+        sys.exit("bowtie2: '_1' length must be >= 1")
+    if _2 and type(_2) != tuple and type(_2) != list:
+        sys.exit("bowtie2: '_2' argument must be an array")
+    if len(_2) < 1:
+        sys.exit("bowtie2: '_2' length must be >= 1")
     if s and type(s) != int:
-        sys.exit("bowtie2: 's' argument must be int")
+        sys.exit("bowtie2: 's' argument must be an int")
     if skip and type(skip) != int:
-        sys.exit("bowtie2: 'skip' argument must be int")
+        sys.exit("bowtie2: 'skip' argument must be an int")
     if u and type(u) != int:
-        sys.exit("bowtie2: 'u' argument must be int")
+        sys.exit("bowtie2: 'u' argument must be an int")
     if qupto and type(qupto) != int:
-        sys.exit("bowtie2: 'qupto' argument must be int")
+        sys.exit("bowtie2: 'qupto' argument must be an int")
     if trim5 and type(trim5) != int:
-        sys.exit("bowtie2: 'trim5' argument must be int")
+        sys.exit("bowtie2: 'trim5' argument must be an int")
     if _5 and type(_5) != int:
-        sys.exit("bowtie2: '_5' argument must be int")
+        sys.exit("bowtie2: '_5' argument must be an int")
     if trim3 and type(trim3) != int:
-        sys.exit("bowtie2: 'trim3' argument must be int")
+        sys.exit("bowtie2: 'trim3' argument must be an int")
     if _3 and type(_3) != int:
-        sys.exit("bowtie2: '_3' argument must be int")
+        sys.exit("bowtie2: '_3' argument must be an int")
     if N and type(N) != int:
-        sys.exit("bowtie2: 'N' argument must be int")
+        sys.exit("bowtie2: 'N' argument must be an int")
     if L and type(L) != int:
-        sys.exit("bowtie2: 'L' argument must be int")
+        sys.exit("bowtie2: 'L' argument must be an int")
     if i and type(i) != str:
-        sys.exit("bowtie2: 'i' argument must be string")
+        sys.exit("bowtie2: 'i' argument must be a string")
     if n_ceil and type(n_ceil) != str:
-        sys.exit("bowtie2: 'n_ceil' argument must be string")
+        sys.exit("bowtie2: 'n_ceil' argument must be a string")
     if dpad and type(dpad) != int:
-        sys.exit("bowtie2: 'dpad' argument must be int")
+        sys.exit("bowtie2: 'dpad' argument must be an int")
     if gbar and type(gbar) != int:
-        sys.exit("bowtie2: 'gbar' argument must be int")
+        sys.exit("bowtie2: 'gbar' argument must be an int")
     if k and type(k) != int:
-        sys.exit("bowtie2: 'k' argument must be int")
+        sys.exit("bowtie2: 'k' argument must be an int")
     if D and type(D) != int:
-        sys.exit("bowtie2: 'D' argument must be int")
+        sys.exit("bowtie2: 'D' argument must be an int")
     if R and type(R) != int:
-        sys.exit("bowtie2: 'R' argument must be int")
+        sys.exit("bowtie2: 'R' argument must be an int")
     if ma and type(ma) != int:
-        sys.exit("bowtie2: 'ma' argument must be int")
+        sys.exit("bowtie2: 'ma' argument must be an int")
     if mp and (type(mp) != tuple or type(mp[0]) != int or type(mp[1]) != int):
-        sys.exit("bowtie2: 'mp' argument must be tuple of two int")
+        sys.exit("bowtie2: 'mp' argument must be a tuple of two int")
     if np and type(np) != int:
-        sys.exit("bowtie2: 'np' argument must be int")
+        sys.exit("bowtie2: 'np' argument must be an int")
     if rdg and (type(rdg) != tuple or
             type(rdg[0]) != int or type(rdg[1]) != int):
-        sys.exit("bowtie2: 'rdg' argument must be tuple of two int")
+        sys.exit("bowtie2: 'rdg' argument must be a tuple of two int")
     if rfg and (type(rfg) != tuple or
             type(rfg[0]) != int or type(rfg[1]) != int):
-        sys.exit("bowtie2: 'rfg' argument must be tuple of two int")
+        sys.exit("bowtie2: 'rfg' argument must be a tuple of two int")
     if score_min and type(score_min) != str:
-        sys.exit("bowtie2: 'score_min' argument must be string")
+        sys.exit("bowtie2: 'score_min' argument must be a string")
     if I and type(I) != int:
-        sys.exit("bowtie2: 'I' argument must be int")
+        sys.exit("bowtie2: 'I' argument must be an int")
     if minins and type(minins) != int:
-        sys.exit("bowtie2: 'minins' argument must be int")
+        sys.exit("bowtie2: 'minins' argument must be an int")
     if X and type(X) != int:
-        sys.exit("bowtie2: 'X' argument must be int")
+        sys.exit("bowtie2: 'X' argument must be an int")
     if maxins and type(maxins) != int:
-        sys.exit("bowtie2: 'maxins' argument must be int")
+        sys.exit("bowtie2: 'maxins' argument must be an int")
     if rg_id and type(rg_id) != str:
-        sys.exit("bowtie2: 'rg_id' argument must be string")
+        sys.exit("bowtie2: 'rg_id' argument must be a string")
     if rg and type(rg) != str:
-        sys.exit("bowtie2: 'rg' argument must be string")
+        sys.exit("bowtie2: 'rg' argument must be a string")
     if o and type(o) != int:
-        sys.exit("bowtie2: 'o' argument must be int")
+        sys.exit("bowtie2: 'o' argument must be an int")
     if offrate and type(offrate) != int:
-        sys.exit("bowtie2: 'offrate' argument must be int")
+        sys.exit("bowtie2: 'offrate' argument must be an int")
     if p and type(p) != int:
-        sys.exit("bowtie2: 'p' argument must be int")
+        sys.exit("bowtie2: 'p' argument must be an int")
     if threads and type(threads) != int:
-        sys.exit("bowtie2: 'threads' argument must be int")
+        sys.exit("bowtie2: 'threads' argument must be an int")
     if seed and type(seed) != int:
-        sys.exit("bowtie2: 'seed' argument must be int")
+        sys.exit("bowtie2: 'seed' argument must be an int")
 
     if qseq:
         read_format = formats.Qseq
@@ -142,7 +154,7 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     else:
         read_format = formats.Fastq
         str_format = "FASTQ"
-    error_msg = "bowtie2: U argument must be array of " + str_format
+    error_msg = "bowtie2: U argument must be an array of " + str_format
     if U:
         for read in U:
             if type(read) != read_format:
@@ -358,7 +370,7 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     # Creating program
     print " ".join(cmd)
     if not c:
-        files_array = U and U or _1 + _2
+        files_array = U and list(U) or list(_1 + _2)
     else:
         files_array = []
     files_array.append(x)
