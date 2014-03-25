@@ -50,329 +50,109 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     if p and threads:
         sys.exit("bowtie2: use only 'p' or 'threads'")
 
-
-    # Checking types
-    if type(x) != formats.Bowtie2Index:
-        sys.exit("bowtie2: 'x' argument must be a Bowtie2Index")
-    if type(S) != str:
-        sys.exit("bowtie2: 'S' argument must be a string")
-    if U and type(U) != tuple and type(U) != list:
-        sys.exit("bowtie2: 'U' argument must be an array")
-    if len(U) < 1:
-        sys.exit("bowtie2: 'U' length must be >= 1")
-    if _1 and type(_1) != tuple and type(_1) != list:
-        sys.exit("bowtie2: '_1' argument must be an array")
-    if len(_1) < 1:
-        sys.exit("bowtie2: '_1' length must be >= 1")
-    if _2 and type(_2) != tuple and type(_2) != list:
-        sys.exit("bowtie2: '_2' argument must be an array")
-    if len(_2) < 1:
-        sys.exit("bowtie2: '_2' length must be >= 1")
-    if s and type(s) != int:
-        sys.exit("bowtie2: 's' argument must be an int")
-    if skip and type(skip) != int:
-        sys.exit("bowtie2: 'skip' argument must be an int")
-    if u and type(u) != int:
-        sys.exit("bowtie2: 'u' argument must be an int")
-    if qupto and type(qupto) != int:
-        sys.exit("bowtie2: 'qupto' argument must be an int")
-    if trim5 and type(trim5) != int:
-        sys.exit("bowtie2: 'trim5' argument must be an int")
-    if _5 and type(_5) != int:
-        sys.exit("bowtie2: '_5' argument must be an int")
-    if trim3 and type(trim3) != int:
-        sys.exit("bowtie2: 'trim3' argument must be an int")
-    if _3 and type(_3) != int:
-        sys.exit("bowtie2: '_3' argument must be an int")
-    if N and type(N) != int:
-        sys.exit("bowtie2: 'N' argument must be an int")
-    if L and type(L) != int:
-        sys.exit("bowtie2: 'L' argument must be an int")
-    if i and type(i) != str:
-        sys.exit("bowtie2: 'i' argument must be a string")
-    if n_ceil and type(n_ceil) != str:
-        sys.exit("bowtie2: 'n_ceil' argument must be a string")
-    if dpad and type(dpad) != int:
-        sys.exit("bowtie2: 'dpad' argument must be an int")
-    if gbar and type(gbar) != int:
-        sys.exit("bowtie2: 'gbar' argument must be an int")
-    if k and type(k) != int:
-        sys.exit("bowtie2: 'k' argument must be an int")
-    if D and type(D) != int:
-        sys.exit("bowtie2: 'D' argument must be an int")
-    if R and type(R) != int:
-        sys.exit("bowtie2: 'R' argument must be an int")
-    if ma and type(ma) != int:
-        sys.exit("bowtie2: 'ma' argument must be an int")
-    if mp and (type(mp) != tuple or type(mp[0]) != int or type(mp[1]) != int):
-        sys.exit("bowtie2: 'mp' argument must be a tuple of two int")
-    if np and type(np) != int:
-        sys.exit("bowtie2: 'np' argument must be an int")
-    if rdg and (type(rdg) != tuple or
-            type(rdg[0]) != int or type(rdg[1]) != int):
-        sys.exit("bowtie2: 'rdg' argument must be a tuple of two int")
-    if rfg and (type(rfg) != tuple or
-            type(rfg[0]) != int or type(rfg[1]) != int):
-        sys.exit("bowtie2: 'rfg' argument must be a tuple of two int")
-    if score_min and type(score_min) != str:
-        sys.exit("bowtie2: 'score_min' argument must be a string")
-    if I and type(I) != int:
-        sys.exit("bowtie2: 'I' argument must be an int")
-    if minins and type(minins) != int:
-        sys.exit("bowtie2: 'minins' argument must be an int")
-    if X and type(X) != int:
-        sys.exit("bowtie2: 'X' argument must be an int")
-    if maxins and type(maxins) != int:
-        sys.exit("bowtie2: 'maxins' argument must be an int")
-    if rg_id and type(rg_id) != str:
-        sys.exit("bowtie2: 'rg_id' argument must be a string")
-    if rg and type(rg) != str:
-        sys.exit("bowtie2: 'rg' argument must be a string")
-    if o and type(o) != int:
-        sys.exit("bowtie2: 'o' argument must be an int")
-    if offrate and type(offrate) != int:
-        sys.exit("bowtie2: 'offrate' argument must be an int")
-    if p and type(p) != int:
-        sys.exit("bowtie2: 'p' argument must be an int")
-    if threads and type(threads) != int:
-        sys.exit("bowtie2: 'threads' argument must be an int")
-    if seed and type(seed) != int:
-        sys.exit("bowtie2: 'seed' argument must be an int")
-
-    if qseq:
-        read_format = formats.Qseq
-        str_format = "QSEQ"
-    elif f:
-        read_format = formats.Fasta
-        str_format = "FASTA"
-    elif r:
-        read_format = formats.Unknown
-        str_format = "UNKNOWN"
-    elif c:
-        read_format = str
-        str_format = "string"
-    else:
-        read_format = formats.Fastq
-        str_format = "FASTQ"
-    error_msg = "bowtie2: U argument must be an array of " + str_format
+    program = create_program("bowtie2")
+    program.add_argument(x, formats.Bowtie2Index, "-x")
     if U:
-        for read in U:
-            if type(read) != read_format:
-                sys.exit(error_msg)
-    else:
-        for read in _1:
-            if type(read) != read_format:
-                sys.exit(error_msg)
-        for read in _2:
-            if type(read) != read_format:
-                sys.exit(error_msg)
-
-    # Generating basic command
-    if U:
-        if c:
-            reads = ",".join(U)
+        if qseq:
+            program.add_arguments(U, formats.Qseq, 1, ",", "-U")
+        elif f:
+            program.add_arguments(U, formats.Fasta, 1, ",", "-U")
+        elif r:
+            program.add_arguments(U, formats.Unknown, 1, ",", "-U")
+        elif c:
+            program.add_arguments(U, str, 1, ",", "-U")
         else:
-            reads = ",".join([read.path for read in U])
-        cmd = ["bowtie2", "-x", x.path, "-U", reads, "-S", S]
+            program.add_arguments(U, formats.Fastq, 1, ",", "-U")
     else:
-        if c:
-            reads1 = ",".join(_1)
-            reads2 = ",".join(_2)
+        if qseq:
+            program.add_arguments(_1, formats.Qseq, 1, ",", "-1")
+            program.add_arguments(_2, formats.Qseq, 1, ",", "-2")
+        elif f:
+            program.add_arguments(_1, formats.Fasta, 1, ",", "-1")
+            program.add_arguments(_2, formats.Fasta, 1, ",", "-2")
+        elif r:
+            program.add_arguments(_1, formats.Unknown, 1, ",", "-1")
+            program.add_arguments(_2, formats.Unknown, 1, ",", "-2")
+        elif c:
+            program.add_arguments(_1, str, 1, ",", "-1")
+            program.add_arguments(_2, str, 1, ",", "-2")
         else:
-            reads1 = ",".join([read.path for read in _1])
-            reads2 = ",".join([read.path for read in _2])
-        cmd = ["bowtie2", "-x", x.path, "-1", reads1, "-2", reads2, "-S", S]
-
-    # Adding options
-    if q:
-        cmd.append("-q")
-    elif qseq:
-        cmd.append("--qseq")
-    elif f:
-        cmd.append("-f")
-    elif r:
-        cmd.append("-r")
-    elif c:
-        cmd.append("-c")
-    if s:
-        cmd.append("-s")
-        cmd.append(str(s))
-    elif skip:
-        cmd.append("--skip")
-        cmd.append(str(skip))
-    if u:
-        cmd.append("-u")
-        cmd.append(str(u))
-    elif qupto:
-        cmd.append("--qupto")
-        cmd.append(str(qupto))
-    if trim5:
-        cmd.append("--trim5")
-        cmd.append(str(trim5))
-    if _5:
-        cmd.append("-5")
-        cmd.append(str(_5))
-    if trim3:
-        cmd.append("--trim3")
-        cmd.append(str(trim3))
-    if _3:
-        cmd.append("-3")
-        cmd.append(str(_3))
-    if phred33:
-        cmd.append("--phred33")
-    if phred64:
-        cmd.append("--phred64")
-    if solexa_quals:
-        cmd.append("--solexa-quals")
-    if int_quals:
-        cmd.append("--int-quals")
-    if very_fast:
-        cmd.append("--very-fast")
-    if fast:
-        cmd.append("--fast")
-    if sensitive:
-        cmd.append("--sensitive")
-    if very_sensitive:
-        cmd.append("--very-sensitive")
-    if very_fast_local:
-        cmd.append("--very-fast-local")
-    if fast_local:
-        cmd.append("--fast-local")
-    if sensitive_local:
-        cmd.append("--sensitive-local")
-    if very_sensitive_local:
-        cmd.append("--very-sensitive-local")
-    if N:
-        cmd.append("-N")
-        cmd.append(str(N))
-    if L:
-        cmd.append("-L")
-        cmd.append(str(L))
-    if i:
-        cmd.append("-i")
-        cmd.append(i)
-    if n_ceil:
-        cmd.append("--n-ceil")
-        cmd.append(n_ceil)
-    if dpad:
-        cmd.append("--dpad")
-        cmd.append(str(dpad))
-    if gbar:
-        cmd.append("--gbar")
-        cmd.append(str(gbar))
-    if ignore_quals:
-        cmd.append("--ignore-quals")
-    if nofw:
-        cmd.append("--nofw")
-    if norc:
-        cmd.append("--norc")
-    if no_1mm_upfront:
-        cmd.append("--no-1mm-upfront")
-    if end_to_end:
-        cmd.append("--end-to-end")
-    if local:
-        cmd.append("--local")
-    if k:
-        cmd.append("-k")
-        cmd.append(str(k))
-    if a:
-        cmd.append("-a")
-    if D:
-        cmd.append("-D")
-        cmd.append(str(D))
-    if R:
-        cmd.append("-R")
-        cmd.append(str(R))
-    if ma:
-        cmd.append("--ma")
-        cmd.append(str(ma))
-    if mp:
-        cmd.append("--mp")
-        cmd.append(",".join([str(mp[0]), str(mp[1])]))
-    if np:
-        cmd.append("--np")
-        cmd.append(str(np))
-    if rdg:
-        cmd.append("--rdg")
-        cmd.append(",".join([str(rdg[0]), str(rdg[1])]))
-    if rfg:
-        cmd.append("--rfg")
-        cmd.append(",".join([str(rfg[0]), str(rfg[1])]))
-    if score_min:
-        cmd.append("--score-min")
-        cmd.append(score_min)
-    if I:
-        cmd.append("-I")
-        cmd.append(str(I))
-    elif minins:
-        cmd.append("--minins")
-        cmd.append(str(minins))
-    if X:
-        cmd.append("-X")
-        cmd.append(str(X))
-    elif maxins:
-        cmd.append("--maxins")
-        cmd.append(str(maxins))
-    if fr:
-        cmd.append("--fr")
-    if rf:
-        cmd.append("--rf")
-    if ff:
-        cmd.append("--ff")
-    if no_mixed:
-        cmd.append("--no-mixed")
-    if no_discordant:
-        cmd.append("--no-discordant")
-    if dovetail:
-        cmd.append("--dovetail")
-    if no_contain:
-        cmd.append("--no-contain")
-    if no_overlap:
-        cmd.append("--no-overlap")
-    if no_unal:
-        cmd.append("--no-unal")
-    if no_hd:
-        cmd.append("--no-hd")
-    if no_sq:
-        cmd.append("--no-sq")
-    if rg_id:
-        cmd.append("--rg-id")
-        cmd.append(rg_id)
-    if rg:
-        cmd.append("--rg")
-        cmd.append(rg)
-    if omit_sec_seq:
-        cmd.append("--omit-sec-seq")
-    if o:
-        cmd.append("-o")
-        cmd.append(str(o))
-    if offrate:
-        cmd.append("--offrate")
-        cmd.append(str(offrate))
-    if p:
-        cmd.append("-p")
-        cmd.append(str(p))
-    if threads:
-        cmd.append("--threads")
-        cmd.append(str(threads))
-    if reorder:
-        cmd.append("--reorder")
-    if mm:
-        cmd.append("--mm")
-    if qc_filter:
-        cmd.append("--qc-filter")
-    if seed:
-        cmd.append("--seed")
-        cmd.append(str(seed))
-    if non_deterministic:
-        cmd.append("--non-deterministic")
-
-    # Creating program
-    print " ".join(cmd)
-    if not c:
-        files_array = U and list(U) or list(_1 + _2)
-    else:
-        files_array = []
-    files_array.append(x)
-    program = create_program(cmd, files_array)
+            program.add_arguments(_1, formats.Fastq, 1, ",", "-1")
+            program.add_arguments(_2, formats.Fastq, 1, ",", "-2")
+    program.add_argument(S, str, "-S")
+    program.add_argument(q, bool, "-q")
+    program.add_argument(qseq, bool, "--qseq")
+    program.add_argument(f, bool, "-f")
+    program.add_argument(r, bool, "-r")
+    program.add_argument(c, bool, "-c")
+    program.add_argument(s, int, "-s")
+    program.add_argument(skip, int, "--skip")
+    program.add_argument(u, int, "-u")
+    program.add_argument(qupto, int, "--qupto")
+    program.add_argument(trim5, int, "--trim5")
+    program.add_argument(_5, int, "-5")
+    program.add_argument(trim3, int, "--trim3")
+    program.add_argument(_3, int, "-3")
+    program.add_argument(phred33, bool, "--phred33")
+    program.add_argument(phred64, bool, "--phred64")
+    program.add_argument(solexa_quals, bool, "--solexa-quals")
+    program.add_argument(int_quals, bool, "--int-quals")
+    program.add_argument(very_fast, bool, "--very-fast")
+    program.add_argument(fast, bool, "--fast")
+    program.add_argument(sensitive, bool, "--sensitive")
+    program.add_argument(very_sensitive, bool, "--very-sensitive")
+    program.add_argument(very_fast_local, bool, "--very-fast-local")
+    program.add_argument(fast_local, bool, "--fast-local")
+    program.add_argument(sensitive_local, bool, "--sensitive-local")
+    program.add_argument(very_sensitive_local, bool, "--very-sensitive-local")
+    program.add_argument(N, int, "-N")
+    program.add_argument(L, int, "-L")
+    program.add_argument(i, str, "-i")
+    program.add_argument(n_ceil, str, "--n-ceil")
+    program.add_argument(dpad, int, "--dpad")
+    program.add_argument(gbar, int, "--gbar")
+    program.add_argument(ignore_quals, bool, "--ignore-quals")
+    program.add_argument(nofw, bool, "--nofw")
+    program.add_argument(norc, bool, "--norc")
+    program.add_argument(no_1mm_upfront, bool, "--no-1mm-upfront")
+    program.add_argument(end_to_end, bool, "--end-to-end")
+    program.add_argument(local, bool, "--local")
+    program.add_argument(k, int, "-k")
+    program.add_argument(a, bool, "-a")
+    program.add_argument(D, int, "-D")
+    program.add_argument(R, int, "-R")
+    program.add_argument(ma, int, "--ma")
+    program.add_arguments(mp, int, 2, ",", "--mp")
+    program.add_argument(np, int, "--np")
+    program.add_arguments(rdg, int, 2, ",", "--rdg")
+    program.add_arguments(rfg, int, 2, ",", "--rfg")
+    program.add_argument(score_min, str, "--score-min")
+    program.add_argument(I, int, "-I")
+    program.add_argument(minins, int, "--minins")
+    program.add_argument(X, int, "-X")
+    program.add_argument(maxins, int, "--maxins")
+    program.add_argument(fr, bool, "--fr")
+    program.add_argument(rf, bool, "--rf")
+    program.add_argument(ff, bool, "--ff")
+    program.add_argument(no_mixed, bool, "--no-mixed")
+    program.add_argument(no_discordant, bool, "--no-discordant")
+    program.add_argument(dovetail, bool, "--dovetail")
+    program.add_argument(no_contain, bool, "--no-contain")
+    program.add_argument(no_overlap, bool, "--no-overlap")
+    program.add_argument(no_unal, bool, "--no-unal")
+    program.add_argument(no_hd, bool, "--no-hd")
+    program.add_argument(no_sq, bool, "--no-sq")
+    program.add_argument(rg_id, str, "--rg-id")
+    program.add_argument(rg, str, "--rg")
+    program.add_argument(omit_sec_seq, bool, "--omit-sec-seq")
+    program.add_argument(o, int, "-o")
+    program.add_argument(offrate, int, "--offrate")
+    program.add_argument(p, int, "-p")
+    program.add_argument(threads, int, "--threads")
+    program.add_argument(reorder, bool, "--reorder")
+    program.add_argument(mm, bool, "--mm")
+    program.add_argument(qc_filter, bool, "--qc-filter")
+    program.add_argument(seed, int, "--seed")
+    program.add_argument(non_deterministic, int, "--non-deterministic")
+    print " ".join(program.cmd)
     return formats.Sam(S, program)

@@ -1,6 +1,6 @@
 from formats import *
 from tools import bowtie2, samtools, bcftools
-from pipeline import run_pipeline
+from pipeline import run_pipeline 
 
 
 ref = Fasta("GRCh37.fa")
@@ -16,7 +16,7 @@ sam2 = bowtie2.bowtie2(x=i, U=r2, S="out2.sam", p=1)
 bam2 = samtools.view(aln=sam2, o="out2.bam", b=True, S=True)
 s_bam2 = samtools.sort(aln=bam2, out="sorted2")
 
-bcf = samtools.mpileup(aln=(s_bam1, s_bam2), out="out.bcf", u=True, f=ref)
+bcf = samtools.mpileup(_in=(s_bam1, s_bam2), out="out.bcf", u=True, f=ref)
 vcf = bcftools.view(_in=bcf, out="out.vcf")
 
 run_pipeline()
