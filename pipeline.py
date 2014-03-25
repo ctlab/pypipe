@@ -29,7 +29,7 @@ class PipelineNode:
         else:
             subprocess.call(self.cmd)
 
-    def add_argument(self, value, type_, option=None):
+    def add_arg(self, value, type_, option=None):
         if not value:
             return
         if type(value) == int and type_ == float:
@@ -61,7 +61,7 @@ class PipelineNode:
         elif type(value) != bool:
             self.cmd.append(str(value))
 
-    def add_arguments(self, value, type_, min_len=1, delim=" ", option=None):
+    def add_args(self, value, type_, min_len=1, delim=" ", option=None):
         if not value:
             return
         if option:
@@ -85,7 +85,7 @@ class PipelineNode:
 
         if not option:
             for v in value:
-                self.add_argument(v, type_)
+                self.add_arg(v, type_)
         else:
             for v in value:
                 if type(v) != type_:
@@ -95,7 +95,7 @@ class PipelineNode:
                         v.program.children.add(self)
                         self.count += 1
             value = [v.path for v in value]
-            self.add_argument(delim.join(value), str, option)
+            self.add_arg(delim.join(value), str, option)
 
     def run(self):
         running.append(self)
