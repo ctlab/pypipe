@@ -61,10 +61,13 @@ class PipelineNode:
         elif type(value) != bool:
             self.cmd.append(str(value))
 
-    def add_arguments(self, value, type_, min_len=1, delim=None, option=None):
+    def add_arguments(self, value, type_, min_len=1, delim=" ", option=None):
         if not value:
             return
-        msg = self.name + ": expected list of "
+        if option:
+            msg = self.name + ": '" + option + "' must be list of "
+        else:
+            msg = self.name + ": expected list of "
         if issubclass(type_, formats.Format):
             msg += type_.__name__.upper() + " files"
         elif type_ == int:
@@ -80,7 +83,7 @@ class PipelineNode:
         if len(value) < min_len:
             sys.exit(self.name + ": list length must be >= " + min_len)
 
-        if not delim:
+        if not option:
             for v in value:
                 self.add_argument(v, type_)
         else:
