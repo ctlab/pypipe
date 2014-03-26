@@ -1,76 +1,86 @@
 import sys
 
 import formats
-from pipeline import create_program
+from utils import create_program
 
 
-def index(ref, params=None):
-    """ bwa index 
-
-    For example: bwa index -a bwtsw ref.fasta
-    bwa.index(ref=Fasta("ref.fasta"), params="-a bwtsw")
-
-    This function returns nothing
-
-    """
-    if type(ref) != formats.Fasta:
-        msg = "bwa index: " + ref.path + " must be in FASTA format"
-        sys.exit(msg)
-    cmd = ["bwa", "index", ref.path]
-    if params:
-        params = params.split(" ")
-        cmd += params
-    program = create_program(cmd, [ref])
-
-
-def bwasw(ref, read, output, params=None):
-    """ bwa bwasw 
-
-    For example: bwa bwasw -t 2 ref.fa read.fq > aln.sam
-    aln = bwa.bwasw(Fasta("ref.fa")), Fastq("read.fq"), "aln.sam", "-t 2")
-
-    This function returns SAM file
-
-    """
-    if type(ref) != formats.Fasta:
-        msg = "bwa bwasw: " + ref.path + " must be in FASTA format"
-        sys.exit(msg)
-    if type(read) != formats.Fastq:
-        msg = "bwa bwasw: " + read.path + " must be in FASTQ format"
-        sys.exit(msg)
-    cmd = ["bwa", "bwasw", ref.path, read.path]
-    if params:
-        params = params.split(" ")
-        cmd += params
-    program = create_program(cmd, [ref, read], output)
-    return formats.Sam(output, program)
+def aln(ref, read, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
+        t=None, M=None, O=None, E=None, R=None, c=None, N=None,
+        q=None, I=None, B=None, b=None, _0=None, _1=None, _2=None):
+    program = create_program("bwa aln", out)
+    program.add_arg(ref, formats.Fasta)
+    program.add_arg(read, formats.Fastq)
+    program.add_arg(n, int, '-n')
+    program.add_arg(o, int, '-o')
+    program.add_arg(e, int, '-e')
+    program.add_arg(d, int, '-d')
+    program.add_arg(i, int, '-i')
+    program.add_arg(l, int, '-l')
+    program.add_arg(k, int, '-k')
+    program.add_arg(t, int, '-t')
+    program.add_arg(M, int, '-M')
+    program.add_arg(O, int, '-O')
+    program.add_arg(E, int, '-E')
+    program.add_arg(R, int, '-R')
+    program.add_arg(c, bool, '-c')
+    program.add_arg(N, bool, '-N')
+    program.add_arg(q, int, '-q')
+    program.add_arg(I, bool, '-I')
+    program.add_arg(B, int, '-B')
+    program.add_arg(b, bool, '-b')
+    program.add_arg(_0, bool, '-0')
+    program.add_arg(_1, bool, '-1')
+    program.add_arg(_2, bool, '-2')
+    print " ".join(program.cmd)  # debug
+    return formats.Sai(out, program)
 
 
-def samse(ref, index, read, output, params=None):
-    """ bwa samse 
+def samse(ref, sai, read, out, n=None, r=None):
+    program = create_program("bwa samse", out)
+    program.add_arg(ref, formats.Fasta)
+    program.add_arg(sai, formats.Sai)
+    program.add_arg(read, formats.Fastq)
+    program.add_arg(n, int, "-n")
+    program.add_arg(r, str, "-r")
+    print " ".join(program.cmd)  # debug
+    return formats.Sam(out, program)
 
-    For example: bwa samse ref.fa aln_sa.sai read.fq > aln.sam
-    ref = Fasta("ref.fa")
-    aln_sa = Sai("aln_sa.sai")
-    read = Fastq("read.fq")
-    aln_sam = bwa.samse(ref=ref, index=aln_sa, read=read, output="aln.sam")
 
-    This function returns SAM file
+def sampe(ref, sai1, sai2, in1, in2, out, a=None, o=None,
+          P=None, n=None, N=None, r=None):
+    program = create_program("bwa sampe", out)
+    program.add_arg(ref, formats.Fasta)
+    program.add_arg(sai1, formats.Sai)
+    program.add_arg(sai2, formats.Sai)
+    program.add_arg(in1, formats.Fastq)
+    program.add_arg(in2, formats.Fastq)
+    program.add_arg(a, int, '-a')
+    program.add_arg(o, int, '-o')
+    program.add_arg(P, bool, '-P')
+    program.add_arg(n, int, '-n')
+    program.add_arg(N, int, '-N')
+    program.add_arg(r, str, '-r')
+    print " ".join(program.cmd)  # debug
+    return formats.Sam(out, program)
 
-    """
-    if type(ref) != formats.Fasta:
-        msg = "bwa samse: " + ref.path + " must be in FASTA format"
-        sys.exit(msg)
-    if type(index) != formats.Sai:
-        msg = "bwa samse: " + index.path + " must be in SAI format"
-        sys.exit(msg)
-    if type(read) != formats.Fastq:
-        msg = "bwa samse: " + read.path + " must be in FASTQ format"
-        sys.exit(msg)
-    cmd = ["bwa", "samse", ref.path, index.path, read.path]
-    if params:
-        params = params.split(" ")
-        cmd += params
-    program = create_program(cmd, [ref, index, read], output)
-    return formats.Sam(output, program)
+
+def bwasw(ref, in1, out, in2=None, a=None, b=None, q=None, r=None, t=None,
+          w=None, T=None, c=None, z=None, s=None, N=None):
+    program = create_program("bwa bwasw", out)
+    program.add_arg(ref, formats.Fasta)
+    program.add_arg(in1, formats.Fastq)
+    program.add_arg(in2, formats.Fastq)
+    program.add_arg(a, int, '-a')
+    program.add_arg(b, int, '-b')
+    program.add_arg(q, int, '-q')
+    program.add_arg(r, int, '-r')
+    program.add_arg(t, int, '-t')
+    program.add_arg(w, int, '-w')
+    program.add_arg(T, int, '-T')
+    program.add_arg(c, float, '-c')
+    program.add_arg(z, int, '-z')
+    program.add_arg(s, int, '-s')
+    program.add_arg(N, int, '-N')
+    print " ".join(program.cmd)  # debug
+    return formats.Sam(out, program)
 
