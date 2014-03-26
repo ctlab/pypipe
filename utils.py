@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 import threading
@@ -23,11 +24,14 @@ class _PipelineNode:
         self.thread = threading.Thread(target=self.thread_function, args=())
         
     def thread_function(self):
+        print " ".join(self.cmd)+(self.output and (" > " + self.output) or "")
+        FNULL = open(os.devnull, "w")
         if self.output:
             with open(self.output, "w") as output_file:
-                subprocess.call(self.cmd, stdout=output_file)
+                subprocess.call(self.cmd, stdout=output_file, stderr=FNULL)
         else:
-            subprocess.call(self.cmd)
+            subprocess.call(self.cmd, stdout=FNULL, stderr=FNULL)
+        FNULL.close()
 
     def add_arg(self, value, type_, option=None):
         if not value:

@@ -31,7 +31,7 @@ def aln(ref, read, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
     program.add_arg(_0, bool, '-0')
     program.add_arg(_1, bool, '-1')
     program.add_arg(_2, bool, '-2')
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     return formats.Sai(out, program)
 
 
@@ -42,7 +42,7 @@ def samse(ref, sai, read, out, n=None, r=None):
     program.add_arg(read, formats.Fastq)
     program.add_arg(n, int, "-n")
     program.add_arg(r, str, "-r")
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     return formats.Sam(out, program)
 
 
@@ -60,7 +60,7 @@ def sampe(ref, sai1, sai2, in1, in2, out, a=None, o=None,
     program.add_arg(n, int, '-n')
     program.add_arg(N, int, '-N')
     program.add_arg(r, str, '-r')
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     return formats.Sam(out, program)
 
 
@@ -81,6 +81,6 @@ def bwasw(ref, in1, out, in2=None, a=None, b=None, q=None, r=None, t=None,
     program.add_arg(z, int, '-z')
     program.add_arg(s, int, '-s')
     program.add_arg(N, int, '-N')
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     return formats.Sam(out, program)
 

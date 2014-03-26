@@ -26,7 +26,7 @@ def view(aln, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
     program.add_arg(c, bool, "-c")
     program.add_arg(t, formats.Unknown, "-t")
     program.add_arg(u, bool, "-u")
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     if b:
         return formats.Bam(o, program)
     else:
@@ -39,7 +39,7 @@ def sort(aln, out, n=None, m=None):
     program.add_arg(out, str)
     program.add_arg(n, bool, "-n")
     program.add_arg(m, int, "-m")
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     return formats.Bam(out + ".bam", program)
 
 
@@ -70,7 +70,7 @@ def mpileup(_in, out, _6=None, A=None, B=None, b=None, C=None, d=None,
     program.add_arg(L, int, "-L")
     program.add_arg(o, int, "-o")
     program.add_arg(P, str, "-P")
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     return formats.Bcf(out, program)
 
 
@@ -85,6 +85,6 @@ def merge(_in, out, _1=None, f=None, h=None, n=None, R=None, r=None, u=None):
     program.add_arg(R, str, "-R")
     program.add_arg(r, bool, "-r")
     program.add_arg(u, bool, "-u")
-    print " ".join(program.cmd)  # debug
+    #print " ".join(program.cmd)  # debug
     return formats.Bam(out, program)
 
