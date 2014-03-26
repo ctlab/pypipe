@@ -1,7 +1,7 @@
 import sys
 
 import formats
-from pipeline import create_program
+from utils import create_program
 
 
 # TODO -r - unknown format
@@ -154,5 +154,6 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     program.add_arg(qc_filter, bool, "--qc-filter")
     program.add_arg(seed, int, "--seed")
     program.add_arg(non_deterministic, int, "--non-deterministic")
-    print " ".join(program.cmd)
+    print " ".join(program.cmd)  # debug
     return formats.Sam(S, program)
+

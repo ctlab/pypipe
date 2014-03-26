@@ -1,6 +1,6 @@
 from formats import *
 from tools import bowtie2, samtools, bcftools
-from pipeline import run_pipeline 
+from utils import run_pipeline 
 
 
 ref = Fasta("GRCh37.fa")

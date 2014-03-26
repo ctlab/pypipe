@@ -1,7 +1,7 @@
 import sys
 
 import formats
-from pipeline import create_program
+from utils import create_program
 
 
 # TODO Unknown format

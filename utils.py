@@ -6,11 +6,11 @@ import time
 import formats
 
 
-to_run = []
-running = []
+_to_run = []
+_running = []
 
 
-class PipelineNode:
+class _PipelineNode:
 
     def __init__(self, name, output=None):
         if output and type(output) != str:
@@ -34,22 +34,24 @@ class PipelineNode:
             return
         if type(value) == int and type_ == float:
             value = float(value)
+
+        if option:
+            option = "'" + option + "'"
+        else:
+            option = "argument"
+        msg = self.name + ": " + option + " must be "
+        if issubclass(type_, formats.Format):
+            msg += type_.__name__.upper() + " file"
+        elif type_ == int:
+            msg += "an integer value"
+        elif type_ == float:
+            msg += "a float value"
+        elif type_ == str:
+            msg += "a string value"
+        elif type_ == bool:
+            msg += "a boolean value"
+
         if type(value) != type_:
-            if option:
-                option = "'" + option + "'"
-            else:
-                option = "argument"
-            msg = self.name + ": " + option + " must be "
-            if issubclass(type_, formats.Format):
-                msg += type_.__name__.upper() + " file"
-            elif type_ == int:
-                msg += "an integer value"
-            elif type_ == float:
-                msg += "a float value"
-            elif type_ == str:
-                msg += "a string value"
-            elif type_ == bool:
-                msg += "a boolean value"
             sys.exit(msg)
         if option:
             self.cmd.append(option)
@@ -64,6 +66,7 @@ class PipelineNode:
     def add_args(self, value, type_, min_len=1, delim=" ", option=None):
         if not value:
             return
+
         if option:
             msg = self.name + ": '" + option + "' must be list of "
         else:
@@ -78,6 +81,7 @@ class PipelineNode:
             msg += "string values"
         elif type_ == bool:
             msg += "boolean values"
+
         if type(value) != list and type(value) != tuple:
             sys.exit(msg)
         if len(value) < min_len:
@@ -98,29 +102,29 @@ class PipelineNode:
             self.add_arg(delim.join(value), str, option)
 
     def run(self):
-        running.append(self)
+        _running.append(self)
         self.thread.start()
 
 
 def create_program(name, output=None):
-    program = PipelineNode(name, output)
-    to_run.append(program)
+    program = _PipelineNode(name, output)
+    _to_run.append(program)
     return program
 
 
 def run_pipeline():
-    while len(to_run) > 0:
-        for program in to_run:
+    while len(_to_run) > 0:
+        for program in _to_run:
             if program.count == 0:
                 program.run()
-        for program in running:
+        for program in _running:
             try:
-                to_run.remove(program)
+                _to_run.remove(program)
             except ValueError:
                 pass
-        for program in running:
+        for program in _running:
             if not program.thread.is_alive():
-                running.remove(program)
+                _running.remove(program)
                 for child in program.children:
                     child.count -= 1
         time.sleep(1)
