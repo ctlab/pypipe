@@ -36,10 +36,10 @@ class _PipelineNode:
             value = float(value)
 
         if option:
-            option = "'" + option + "'"
+            option2 = "'" + option + "'"
         else:
-            option = "argument"
-        msg = self.name + ": " + option + " must be "
+            option2 = "argument"
+        msg = self.name + ": " + option2 + " must be "
         if issubclass(type_, formats.Format):
             msg += type_.__name__.upper() + " file"
         elif type_ == int:
@@ -85,21 +85,23 @@ class _PipelineNode:
         if type(value) != list and type(value) != tuple:
             sys.exit(msg)
         if len(value) < min_len:
-            sys.exit(self.name + ": list length must be >= " + min_len)
+            sys.exit(self.name + ": list length must be >= " + str(min_len))
 
         if not option:
             for v in value:
                 self.add_arg(v, type_)
         else:
             for v in value:
+                if type(v) == int and type_ == float:
+                    v = float(v)
                 if type(v) != type_:
                     sys.exit(msg)
                 if isinstance(v, formats.Format):
                     if v.program and self not in v.program.children:
                         v.program.children.add(self)
                         self.count += 1
-            value = [v.path for v in value]
-            self.add_arg(delim.join(value), str, option)
+                    value = [v.path for v in value]
+            self.add_arg(delim.join(map(str, value)), str, option)
 
     def run(self):
         _running.append(self)
