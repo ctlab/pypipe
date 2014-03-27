@@ -99,3 +99,15 @@ class Bowtie2Index(_File):
                 sys.exit("File " + f + " doesn't exist")
 
 
+class BwaIndex(_File):
+
+    def __init__(self, path, program=None):
+        super(BwaIndex, self).__init__(path, program)
+
+    def check(self):
+        files = [".amb", ".ann", ".bwt", ".pac", ".sa"]
+        files = [self.path + f for f in files]
+        for f in files:
+            if not os.path.isfile(f):
+                sys.exit("File " + f + " doesn't exist")
+
