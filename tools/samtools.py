@@ -4,7 +4,6 @@ import formats
 from utils import create_program
 
 
-# TODO Unknown format
 def view(aln, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
          r=None, R=None, S=None, c=None, t=None, u=None):
     program = create_program("samtools view")
