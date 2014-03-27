@@ -56,6 +56,12 @@ class Sai(_File):
         super(Sai, self).__init__(path, program)
 
 
+class Fai(_File):
+    
+    def __init__(self, path, program=None):
+        super(Fai, self).__init__(path, program)
+
+
 class Bcf(_File):
     
     def __init__(self, path, program=None):
