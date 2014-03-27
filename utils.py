@@ -13,26 +13,30 @@ _running = []
 
 class _PipelineNode:
 
-    def __init__(self, name, output=None):
+    def __init__(self, name, log=None, output=None):
         if output and type(output) != str:
             sys.exit(name + ": output must be string")
         self.name = name
         self.cmd = name.split(" ")
         self.children = set()
         self.count = 0
-        self.output = output
+        if log:
+            self.log = open(log, "w")
+        else:
+            self.log = open(os.devnull, "w")
+        if output:
+            self.output = open(output, "w")
+        else:
+            self.output = self.log
         self.thread = threading.Thread(target=self.thread_function, args=())
         
     def thread_function(self):
-        msg = " ".join(self.cmd)+(self.output and (" > " + self.output) or "")
-        sys.stderr.write(msg + "\n")
-        FNULL = open(os.devnull, "w")
-        if self.output:
-            with open(self.output, "w") as output_file:
-                subprocess.call(self.cmd, stdout=output_file, stderr=FNULL)
-        else:
-            subprocess.call(self.cmd, stdout=FNULL, stderr=FNULL)
-        FNULL.close()
+        cmd_msg = " ".join(self.cmd) + (self.output.name !=
+                self.log.name and (" > " + self.output.name) or "")
+        sys.stderr.write(cmd_msg + "\n")  # debug
+        subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
+        self.output.close()
+        self.log.close()
 
     def add_arg(self, value, type_, option=None):
         if not value:
@@ -113,8 +117,8 @@ class _PipelineNode:
         self.thread.start()
 
 
-def create_program(name, output=None):
-    program = _PipelineNode(name, output)
+def create_program(name, output=None, log=None):
+    program = _PipelineNode(name, output, log)
     _to_run.append(program)
     return program
 

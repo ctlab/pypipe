@@ -24,7 +24,7 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
             met_file=None, met_stderr=None, met=None, no_unal=None,
             no_hd=None, no_sq=None, rg_id=None, rg=None, omit_sec_seq=None,
             o=None, offrate=None, p=None, threads=None, reorder=None, mm=None,
-            qc_filter=None, seed=None, non_deterministic=None):
+            qc_filter=None, seed=None, non_deterministic=None, log=None):
     # Checking conflicts
     if (U and _1) or (U and _2) or (not U and not (_1 and _2)):
         sys.exit("bowtie2: Wrong options. Use only 'U' or '_1' and '_2'")
@@ -48,7 +48,7 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     if p and threads:
         sys.exit("bowtie2: use only 'p' or 'threads'")
 
-    program = create_program("bowtie2")
+    program = create_program("bowtie2", log)
     program.add_arg(x, formats.Bowtie2Index, "-x")
     if U:
         if qseq:

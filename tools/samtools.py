@@ -5,8 +5,8 @@ from utils import create_program
 
 
 def view(_in, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
-         r=None, R=None, S=None, c=None, t=None, u=None):
-    program = create_program("samtools view")
+         r=None, R=None, S=None, c=None, t=None, u=None, log=None):
+    program = create_program("samtools view", log)
     if S:
         program.add_arg(_in, formats.Sam)
     else:
@@ -31,8 +31,8 @@ def view(_in, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
         return formats.Sam(o, program)
     
 
-def sort(_in, _out, n=None, m=None):
-    program = create_program("samtools sort")
+def sort(_in, _out, n=None, m=None, log=None):
+    program = create_program("samtools sort", log)
     program.add_arg(_in, formats.Bam)
     program.add_arg(_out, str)
     program.add_arg(n, bool, "-n")
@@ -40,10 +40,10 @@ def sort(_in, _out, n=None, m=None):
     return formats.Bam(_out + ".bam", program)
 
 
-def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None,
-            E=None, f=None, l=None, q=None, Q=None, r=None, D=None, g=None,
-            S=None, u=None, e=None, h=None, I=None, L=None, o=None, P=None):
-    program = create_program("samtools mpileup", _out)
+def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None, E=None,
+            f=None, l=None, q=None, Q=None, r=None, D=None, g=None, S=None,
+            u=None, e=None, h=None, I=None, L=None, o=None, P=None, log=None):
+    program = create_program("samtools mpileup", log, _out)
     program.add_args(_in, formats.Bam)
     program.add_arg(_6, bool, "-6")
     program.add_arg(A, bool, "-A")
@@ -70,8 +70,9 @@ def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None,
     return formats.Bcf(_out, program)
 
 
-def merge(_in, _out, _1=None, f=None, h=None, n=None, R=None, r=None, u=None):
-    program = create_program("samtools merge")
+def merge(_in, _out, _1=None, f=None, h=None, n=None,
+          R=None, r=None, u=None, log=None):
+    program = create_program("samtools merge", log)
     program.add_arg(_out, str)
     program.add_args(_in, formats.Bam, 2)
     program.add_arg(_1, bool, "-1")

@@ -6,8 +6,8 @@ from utils import create_program
 
 def aln(_ref, _in, _out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
         t=None, M=None, O=None, E=None, R=None, c=None, N=None,
-        q=None, I=None, B=None, b=None, _0=None, _1=None, _2=None):
-    program = create_program("bwa aln", _out)
+        q=None, I=None, B=None, b=None, _0=None, _1=None, _2=None, log=None):
+    program = create_program("bwa aln", log, _out)
     program.add_arg(_ref, formats.Fasta)
     program.add_arg(_in, formats.Fastq)
     program.add_arg(n, int, '-n')
@@ -34,8 +34,8 @@ def aln(_ref, _in, _out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
     return formats.Sai(_out, program)
 
 
-def samse(_ref, _sai, _in, _out, n=None, r=None):
-    program = create_program("bwa samse", _out)
+def samse(_ref, _sai, _in, _out, n=None, r=None, log=None):
+    program = create_program("bwa samse", log, _out)
     program.add_arg(_ref, formats.Fasta)
     program.add_arg(_sai, formats.Sai)
     program.add_arg(_in, formats.Fastq)
@@ -45,8 +45,8 @@ def samse(_ref, _sai, _in, _out, n=None, r=None):
 
 
 def sampe(_ref, _sai1, _sai2, _in1, _in2, _out, a=None, o=None,
-          P=None, n=None, N=None, r=None):
-    program = create_program("bwa sampe", _out)
+          P=None, n=None, N=None, r=None, log=None):
+    program = create_program("bwa sampe", log, _out)
     program.add_arg(_ref, formats.Fasta)
     program.add_arg(_sai1, formats.Sai)
     program.add_arg(_sai2, formats.Sai)
@@ -62,8 +62,8 @@ def sampe(_ref, _sai1, _sai2, _in1, _in2, _out, a=None, o=None,
 
 
 def bwasw(_ref, _in1, _out, _in2=None, a=None, b=None, q=None, r=None, t=None,
-          w=None, T=None, c=None, z=None, s=None, N=None):
-    program = create_program("bwa bwasw", _out)
+          w=None, T=None, c=None, z=None, s=None, N=None, log=None):
+    program = create_program("bwa bwasw", log, _out)
     program.add_arg(_ref, formats.Fasta)
     program.add_arg(_in1, formats.Fastq)
     program.add_arg(_in2, formats.Fastq)

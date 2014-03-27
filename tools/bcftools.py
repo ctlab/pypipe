@@ -7,8 +7,8 @@ from utils import create_program
 def view(_in, _out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
          Q=None, s=None, S=None, u=None, c=None, d=None, e=None, g=None,
          i=None, p=None, P=None, t=None, T=None, v=None, _1=None, U=None,
-         X=None):
-    program = create_program("bcftools view", _out)
+         X=None, log=None):
+    program = create_program("bcftools view", log, _out)
     if S:
         program.add_arg(_in, formats.Vcf)
     else:
@@ -43,8 +43,8 @@ def view(_in, _out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
         return formats.Vcf(_out, program)
 
 
-def cat(_in, _out):
-    program = create_program("bcftools cat", _out)
+def cat(_in, _out, log=None):
+    program = create_program("bcftools cat", log, _out)
     program.add_args(_in, formats.Bcf)
     return formats.Bcf(_out, program)
 
