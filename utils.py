@@ -16,6 +16,8 @@ class _PipelineNode:
     def __init__(self, name, log=None, output=None):
         if output and type(output) != str:
             sys.exit(name + ": output must be string")
+        if log and type(log) != str:
+            sys.exit(name + ": log must be string")
         self.name = name
         self.cmd = name.split(" ")
         self.children = set()
