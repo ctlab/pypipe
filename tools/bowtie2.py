@@ -4,7 +4,6 @@ import formats
 from utils import create_program
 
 
-# TODO output options
 def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
             r=None, c=None, s=None, skip=None, u=None, qupto=None,
             trim5=None, _5=None, trim3=None, _3=None, phred33=None,
@@ -47,6 +46,8 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
         sys.exit("bowtie2: use only 'o' or 'offrate'")
     if p and threads:
         sys.exit("bowtie2: use only 'p' or 'threads'")
+    if t and time:
+        sys.exit("bowtie2: use only 't' or 'time'")
 
     program = create_program("bowtie2", log)
     program.add_arg(x, formats.Bowtie2Index, "-x")
@@ -152,5 +153,23 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     program.add_arg(qc_filter, bool, "--qc-filter")
     program.add_arg(seed, int, "--seed")
     program.add_arg(non_deterministic, bool, "--non-deterministic")
+    program.add_arg(t, bool, "-t")
+    program.add_arg(time, bool, "--time")
+    program.add_arg(un, str, "--un")
+    program.add_arg(un_gz, str, "--un-gz")
+    program.add_arg(un_bz2, str, "--un-bz2")
+    program.add_arg(al, str, "--al")
+    program.add_arg(al_gz, str, "--al-gz")
+    program.add_arg(al_bz2, str, "--al-bz2")
+    program.add_arg(un_conc, str, "--un-conc")
+    program.add_arg(un_conc_gz, str, "--un-conc-gz")
+    program.add_arg(un_conc_bz2, str, "--un-conc-bz2")
+    program.add_arg(al_conc, str, "--al-conc")
+    program.add_arg(al_conc_gz, str, "--al-conc-gz")
+    program.add_arg(al_conc_bz2, str, "--al-conc-bz2")
+    program.add_arg(quiet, bool, "--quiet")
+    program.add_arg(met_file, str, "--met-file")
+    program.add_arg(met_stderr, str, "--met-stderr")
+    program.add_arg(met, int, "--met")
     return formats.Sam(S, program)
 
