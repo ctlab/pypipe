@@ -24,7 +24,8 @@ class _PipelineNode:
         self.thread = threading.Thread(target=self.thread_function, args=())
         
     def thread_function(self):
-        print " ".join(self.cmd)+(self.output and (" > " + self.output) or "")
+        msg = " ".join(self.cmd)+(self.output and (" > " + self.output) or "")
+        sys.stderr.write(msg + "\n")
         FNULL = open(os.devnull, "w")
         if self.output:
             with open(self.output, "w") as output_file:

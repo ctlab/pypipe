@@ -31,13 +31,13 @@ def view(_in, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
         return formats.Sam(o, program)
     
 
-def sort(_in, out, n=None, m=None):
+def sort(_in, _out, n=None, m=None):
     program = create_program("samtools sort")
     program.add_arg(_in, formats.Bam)
-    program.add_arg(out, str)
+    program.add_arg(_out, str)
     program.add_arg(n, bool, "-n")
     program.add_arg(m, int, "-m")
-    return formats.Bam(out + ".bam", program)
+    return formats.Bam(_out + ".bam", program)
 
 
 def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None,
