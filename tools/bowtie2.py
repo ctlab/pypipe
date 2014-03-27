@@ -58,7 +58,7 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
         elif f:
             program.add_args(U, formats.Fasta, 1, ",", "-U")
         elif r:
-            program.add_args(U, formats.Unknown, 1, ",", "-U")
+            program.add_args(U, formats.TextFile, 1, ",", "-U")
         elif c:
             program.add_args(U, str, 1, ",", "-U")
         else:
@@ -71,8 +71,8 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
             program.add_args(_1, formats.Fasta, 1, ",", "-1")
             program.add_args(_2, formats.Fasta, 1, ",", "-2")
         elif r:
-            program.add_args(_1, formats.Unknown, 1, ",", "-1")
-            program.add_args(_2, formats.Unknown, 1, ",", "-2")
+            program.add_args(_1, formats.TextFile, 1, ",", "-1")
+            program.add_args(_2, formats.TextFile, 1, ",", "-2")
         elif c:
             program.add_args(_1, str, 1, ",", "-1")
             program.add_args(_2, str, 1, ",", "-2")
