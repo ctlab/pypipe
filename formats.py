@@ -14,10 +14,10 @@ class _Format(object):
             sys.exit("File " + self.path + " doesn't exist")
 
 
-class Unknown(_Format):
+class TextFile(_Format):
 
     def __init__(self, path, program=None):
-        super(Unknown, self).__init__(path, program)
+        super(TextFile, self).__init__(path, program)
 
 
 class Fastq(_Format):
