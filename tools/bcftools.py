@@ -4,11 +4,11 @@ import formats
 from utils import create_program 
 
 
-def view(_in, out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
+def view(_in, _out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
          Q=None, s=None, S=None, u=None, c=None, d=None, e=None, g=None,
          i=None, p=None, P=None, t=None, T=None, v=None, _1=None, U=None,
          X=None):
-    program = create_program("bcftools view", out)
+    program = create_program("bcftools view", _out)
     if S:
         program.add_arg(_in, formats.Vcf)
     else:
@@ -38,13 +38,13 @@ def view(_in, out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
     program.add_arg(U, int, "-U")
     program.add_arg(X, float, "-X")
     if b:
-        return formats.Bcf(out, program)
+        return formats.Bcf(_out, program)
     else:
-        return formats.Vcf(out, program)
+        return formats.Vcf(_out, program)
 
 
-def cat(_in, out):
-    program = create_program("bcftools cat", out)
+def cat(_in, _out):
+    program = create_program("bcftools cat", _out)
     program.add_args(_in, formats.Bcf)
-    return formats.Bcf(out, program)
+    return formats.Bcf(_out, program)
 
