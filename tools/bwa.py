@@ -34,22 +34,22 @@ def aln(_ref, _in, _out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
     return formats.Sai(_out, program)
 
 
-def samse(_ref, sai, _in, _out, n=None, r=None):
+def samse(_ref, _sai, _in, _out, n=None, r=None):
     program = create_program("bwa samse", _out)
     program.add_arg(_ref, formats.Fasta)
-    program.add_arg(sai, formats.Sai)
+    program.add_arg(_sai, formats.Sai)
     program.add_arg(_in, formats.Fastq)
     program.add_arg(n, int, "-n")
     program.add_arg(r, str, "-r")
     return formats.Sam(_out, program)
 
 
-def sampe(_ref, sai1, sai2, _in1, _in2, _out, a=None, o=None,
+def sampe(_ref, _sai1, _sai2, _in1, _in2, _out, a=None, o=None,
           P=None, n=None, N=None, r=None):
     program = create_program("bwa sampe", _out)
     program.add_arg(_ref, formats.Fasta)
-    program.add_arg(sai1, formats.Sai)
-    program.add_arg(sai2, formats.Sai)
+    program.add_arg(_sai1, formats.Sai)
+    program.add_arg(_sai2, formats.Sai)
     program.add_arg(_in1, formats.Fastq)
     program.add_arg(_in2, formats.Fastq)
     program.add_arg(a, int, '-a')
