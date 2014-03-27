@@ -4,8 +4,6 @@ import formats
 from utils import create_program
 
 
-# TODO -r - unknown format
-# TODO -o / --offrate 
 # TODO output options
 def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
             r=None, c=None, s=None, skip=None, u=None, qupto=None,
