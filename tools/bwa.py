@@ -4,12 +4,12 @@ import formats
 from utils import create_program
 
 
-def aln(ref, read, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
+def aln(_ref, _in, _out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
         t=None, M=None, O=None, E=None, R=None, c=None, N=None,
         q=None, I=None, B=None, b=None, _0=None, _1=None, _2=None):
-    program = create_program("bwa aln", out)
-    program.add_arg(ref, formats.Fasta)
-    program.add_arg(read, formats.Fastq)
+    program = create_program("bwa aln", _out)
+    program.add_arg(_ref, formats.Fasta)
+    program.add_arg(_in, formats.Fastq)
     program.add_arg(n, int, '-n')
     program.add_arg(o, int, '-o')
     program.add_arg(e, int, '-e')
@@ -31,42 +31,42 @@ def aln(ref, read, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
     program.add_arg(_0, bool, '-0')
     program.add_arg(_1, bool, '-1')
     program.add_arg(_2, bool, '-2')
-    return formats.Sai(out, program)
+    return formats.Sai(_out, program)
 
 
-def samse(ref, sai, read, out, n=None, r=None):
-    program = create_program("bwa samse", out)
-    program.add_arg(ref, formats.Fasta)
+def samse(_ref, sai, _in, _out, n=None, r=None):
+    program = create_program("bwa samse", _out)
+    program.add_arg(_ref, formats.Fasta)
     program.add_arg(sai, formats.Sai)
-    program.add_arg(read, formats.Fastq)
+    program.add_arg(_in, formats.Fastq)
     program.add_arg(n, int, "-n")
     program.add_arg(r, str, "-r")
-    return formats.Sam(out, program)
+    return formats.Sam(_out, program)
 
 
-def sampe(ref, sai1, sai2, in1, in2, out, a=None, o=None,
+def sampe(_ref, sai1, sai2, _in1, _in2, _out, a=None, o=None,
           P=None, n=None, N=None, r=None):
-    program = create_program("bwa sampe", out)
-    program.add_arg(ref, formats.Fasta)
+    program = create_program("bwa sampe", _out)
+    program.add_arg(_ref, formats.Fasta)
     program.add_arg(sai1, formats.Sai)
     program.add_arg(sai2, formats.Sai)
-    program.add_arg(in1, formats.Fastq)
-    program.add_arg(in2, formats.Fastq)
+    program.add_arg(_in1, formats.Fastq)
+    program.add_arg(_in2, formats.Fastq)
     program.add_arg(a, int, '-a')
     program.add_arg(o, int, '-o')
     program.add_arg(P, bool, '-P')
     program.add_arg(n, int, '-n')
     program.add_arg(N, int, '-N')
     program.add_arg(r, str, '-r')
-    return formats.Sam(out, program)
+    return formats.Sam(_out, program)
 
 
-def bwasw(ref, in1, out, in2=None, a=None, b=None, q=None, r=None, t=None,
+def bwasw(_ref, _in1, _out, _in2=None, a=None, b=None, q=None, r=None, t=None,
           w=None, T=None, c=None, z=None, s=None, N=None):
-    program = create_program("bwa bwasw", out)
-    program.add_arg(ref, formats.Fasta)
-    program.add_arg(in1, formats.Fastq)
-    program.add_arg(in2, formats.Fastq)
+    program = create_program("bwa bwasw", _out)
+    program.add_arg(_ref, formats.Fasta)
+    program.add_arg(_in1, formats.Fastq)
+    program.add_arg(_in2, formats.Fastq)
     program.add_arg(a, int, '-a')
     program.add_arg(b, int, '-b')
     program.add_arg(q, int, '-q')
@@ -78,5 +78,5 @@ def bwasw(ref, in1, out, in2=None, a=None, b=None, q=None, r=None, t=None,
     program.add_arg(z, int, '-z')
     program.add_arg(s, int, '-s')
     program.add_arg(N, int, '-N')
-    return formats.Sam(out, program)
+    return formats.Sam(_out, program)
 
