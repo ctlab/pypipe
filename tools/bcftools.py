@@ -38,7 +38,6 @@ def view(_in, out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
     program.add_arg(_1, int, "-1")
     program.add_arg(U, int, "-U")
     program.add_arg(X, float, "-X")
-    #print " ".join(program.cmd)  # debug
     if b:
         return formats.Bcf(out, program)
     else:
@@ -48,6 +47,5 @@ def view(_in, out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
 def cat(_in, out):
     program = create_program("bcftools cat", out)
     program.add_args(_in, formats.Bcf)
-    #print " ".join(program.cmd)  # debug
     return formats.Bcf(out, program)
 
