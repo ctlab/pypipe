@@ -1,7 +1,7 @@
 import os.path
 import sys
 
-class _Format(object):
+class _File(object):
 
     def __init__(self, path, program):
         self.path = path
@@ -14,73 +14,73 @@ class _Format(object):
             sys.exit("File " + self.path + " doesn't exist")
 
 
-class TextFile(_Format):
+class TextFile(_File):
 
     def __init__(self, path, program=None):
         super(TextFile, self).__init__(path, program)
 
 
-class Fastq(_Format):
+class Fastq(_File):
     
     def __init__(self, path, program=None):
         super(Fastq, self).__init__(path, program)
 
 
-class Fasta(_Format):
+class Fasta(_File):
     
     def __init__(self, path, program=None):
         super(Fasta, self).__init__(path, program)
 
 
-class Bam(_Format):
+class Bam(_File):
     
     def __init__(self, path, program=None):
         super(Bam, self).__init__(path, program)
 
 
-class Sam(_Format):
+class Sam(_File):
     
     def __init__(self, path, program=None):
         super(Sam, self).__init__(path, program)
 
 
-class Bai(_Format):
+class Bai(_File):
     
     def __init__(self, path, program=None):
         super(Bai, self).__init__(path, program)
 
 
-class Sai(_Format):
+class Sai(_File):
     
     def __init__(self, path, program=None):
         super(Sai, self).__init__(path, program)
 
 
-class Bcf(_Format):
+class Bcf(_File):
     
     def __init__(self, path, program=None):
         super(Bcf, self).__init__(path, program)
 
 
-class Vcf(_Format):
+class Vcf(_File):
     
     def __init__(self, path, program=None):
         super(Vcf, self).__init__(path, program)
 
 
-class Bed(_Format):
+class Bed(_File):
     
     def __init__(self, path, program=None):
         super(Bed, self).__init__(path, program)
 
 
-class Qseq(_Format):
+class Qseq(_File):
     
     def __init__(self, path, program=None):
         super(Qseq, self).__init__(path, program)
 
 
-class Bowtie2Index(_Format):
+class Bowtie2Index(_File):
 
     def __init__(self, path, program=None):
         super(Bowtie2Index, self).__init__(path, program)
