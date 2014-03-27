@@ -44,7 +44,7 @@ class _PipelineNode:
         else:
             option2 = "argument"
         msg = self.name + ": " + option2 + " must be "
-        if issubclass(type_, formats.Format):
+        if issubclass(type_, formats._Format):
             msg += type_.__name__.upper() + " file"
         elif type_ == int:
             msg += "an integer value"
@@ -59,7 +59,7 @@ class _PipelineNode:
             sys.exit(msg)
         if option:
             self.cmd.append(option)
-        if isinstance(value, formats.Format):
+        if isinstance(value, formats._Format):
             self.cmd.append(value.path)
             if value.program and self not in value.program.children:
                 value.program.children.add(self)
@@ -75,7 +75,7 @@ class _PipelineNode:
             msg = self.name + ": '" + option + "' must be list of "
         else:
             msg = self.name + ": expected list of "
-        if issubclass(type_, formats.Format):
+        if issubclass(type_, formats._Format):
             msg += type_.__name__.upper() + " files"
         elif type_ == int:
             msg += "integer values"
@@ -100,7 +100,7 @@ class _PipelineNode:
                     v = float(v)
                 if type(v) != type_:
                     sys.exit(msg)
-                if isinstance(v, formats.Format):
+                if isinstance(v, formats._Format):
                     if v.program and self not in v.program.children:
                         v.program.children.add(self)
                         self.count += 1
