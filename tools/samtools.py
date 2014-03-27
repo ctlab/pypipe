@@ -4,13 +4,13 @@ import formats
 from utils import create_program
 
 
-def view(aln, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
+def view(_in, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
          r=None, R=None, S=None, c=None, t=None, u=None):
     program = create_program("samtools view")
     if S:
-        program.add_arg(aln, formats.Sam)
+        program.add_arg(_in, formats.Sam)
     else:
-        program.add_arg(aln, formats.Bam)
+        program.add_arg(_in, formats.Bam)
     program.add_arg(o, str, "-o")
     program.add_arg(b, bool, "-b")
     program.add_arg(f, int, "-f")
@@ -31,19 +31,19 @@ def view(aln, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
         return formats.Sam(o, program)
     
 
-def sort(aln, out, n=None, m=None):
+def sort(_in, out, n=None, m=None):
     program = create_program("samtools sort")
-    program.add_arg(aln, formats.Bam)
+    program.add_arg(_in, formats.Bam)
     program.add_arg(out, str)
     program.add_arg(n, bool, "-n")
     program.add_arg(m, int, "-m")
     return formats.Bam(out + ".bam", program)
 
 
-def mpileup(_in, out, _6=None, A=None, B=None, b=None, C=None, d=None,
+def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None,
             E=None, f=None, l=None, q=None, Q=None, r=None, D=None, g=None,
             S=None, u=None, e=None, h=None, I=None, L=None, o=None, P=None):
-    program = create_program("samtools mpileup", out)
+    program = create_program("samtools mpileup", _out)
     program.add_args(_in, formats.Bam)
     program.add_arg(_6, bool, "-6")
     program.add_arg(A, bool, "-A")
@@ -67,12 +67,12 @@ def mpileup(_in, out, _6=None, A=None, B=None, b=None, C=None, d=None,
     program.add_arg(L, int, "-L")
     program.add_arg(o, int, "-o")
     program.add_arg(P, str, "-P")
-    return formats.Bcf(out, program)
+    return formats.Bcf(_out, program)
 
 
-def merge(_in, out, _1=None, f=None, h=None, n=None, R=None, r=None, u=None):
+def merge(_in, _out, _1=None, f=None, h=None, n=None, R=None, r=None, u=None):
     program = create_program("samtools merge")
-    program.add_arg(out, str)
+    program.add_arg(_out, str)
     program.add_args(_in, formats.Bam, 2)
     program.add_arg(_1, bool, "-1")
     program.add_arg(f, bool, "-f")
@@ -81,5 +81,5 @@ def merge(_in, out, _1=None, f=None, h=None, n=None, R=None, r=None, u=None):
     program.add_arg(R, str, "-R")
     program.add_arg(r, bool, "-r")
     program.add_arg(u, bool, "-u")
-    return formats.Bam(out, program)
+    return formats.Bam(_out, program)
 
