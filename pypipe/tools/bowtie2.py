@@ -1,7 +1,14 @@
 import sys
 
 from pypipe import formats
-from pypipe.utils import create_program
+from pypipe.utils import create_program, install_program
+
+
+install_program(cmd=["git clone https://github.com/BenLangmead/bowtie2",
+                     "cd bowtie2",
+                     "make",
+                     "mv bowtie2 bowtie2* ~/.pypipe"],
+                program_name="bowtie2")
 
 
 def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,

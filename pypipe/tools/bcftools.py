@@ -1,7 +1,17 @@
 import sys
 
 from pypipe import formats
-from pypipe.utils import create_program 
+from pypipe.utils import create_program, install_program
+
+
+install_program(cmd=["git clone --branch=bcftools+calling \
+                          git://github.com/samtools/htslib.git",
+                     "git clone git://github.com/samtools/bcftools.git",
+                     "cd bcftools",
+                     "make",
+                     "mv bcftools ~/.pypipe"
+                    ],
+                program_name="bcftools")
 
 
 # TODO index

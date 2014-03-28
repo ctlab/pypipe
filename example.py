@@ -1,6 +1,6 @@
-from formats import *
-from tools import bwa, bowtie2, samtools, bcftools
-from utils import run_pipeline 
+from pypipe.formats import *
+from pypipe.tools import bwa, bowtie2, samtools, bcftools
+from pypipe.utils import run_pipeline 
 
 
 ref = Fasta("GRCh37.fa")
@@ -9,7 +9,7 @@ i = Bowtie2Index("GRCh37")
 r1 = Fastq("IonXpress_021.fastq")
 r2 = Fastq("IonXpress_022.fastq")
 
-sam1 = bowtie2.bowtie2(x=i, U=[r1], S="out1.sam", p=4, log="bowtie_log")
+sam1 = bowtie2.bowtie2(x=i, U=[r1], S="out1.sam", p=1, log="bowtie_log")
 bam1 = samtools.view(_in=sam1, o="out1.bam", b=True, S=True)
 s_bam1 = samtools.sort(_in=bam1, _out="sorted1")
 

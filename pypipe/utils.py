@@ -3,6 +3,7 @@ import subprocess
 import sys
 import threading
 import time
+import tempfile
 
 from pypipe import formats
 
@@ -30,9 +31,9 @@ class _PipelineNode:
             self.output = open(output, "w")
         else:
             self.output = self.log
-        self.thread = threading.Thread(target=self.thread_function, args=())
+        self.thread = threading.Thread(target=self._thread_function, args=())
         
-    def thread_function(self):
+    def _thread_function(self):
         cmd_msg = " ".join(self.cmd) + (self.output.name !=
                 self.log.name and (" > " + self.output.name) or "")
         sys.stderr.write(cmd_msg + "\n")  # debug
@@ -114,7 +115,7 @@ class _PipelineNode:
                     value = [v.path for v in value]
             self.add_arg(delim.join(map(str, value)), str, option)
 
-    def run(self):
+    def _run(self):
         _running.append(self)
         self.thread.start()
 
@@ -129,7 +130,7 @@ def run_pipeline():
     while len(_to_run) > 0:
         for program in _to_run:
             if program.count == 0:
-                program.run()
+                program._run()
         for program in _running:
             try:
                 _to_run.remove(program)
@@ -141,4 +142,26 @@ def run_pipeline():
                 for child in program.children:
                     child.count -= 1
         time.sleep(1)
+
+
+def _program_exists(program_name):
+    paths = os.environ['PATH'].split(":")
+    for path in paths:
+        f = os.path.join(path, program_name)
+        if os.path.isfile(f):
+            return True
+    return False
+
+
+def _install_program(cmd):
+    tmp_dir = tempfile.mkdtemp()
+    cmd = ["cd " + tmp_dir] + cmd
+    os.system(" && ".join(cmd))
+
+
+def install_program(cmd, program_name):
+    if not _program_exists(program_name):
+        print program_name, "is not installed. Installing..."
+        _install_program(cmd)
+        print program_name, "installed."
 
