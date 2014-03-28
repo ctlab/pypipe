@@ -1,4 +1,0 @@
-pypipe
-======
-
-bioinformatics pipelines framework
