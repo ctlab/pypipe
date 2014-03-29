@@ -42,7 +42,7 @@ class _PipelineNode:
         self.log.close()
 
     def add_arg(self, value, type_, option=None):
-        if not value:
+        if value is None:
             return
         if type(value) == int and type_ == float:
             value = float(value)
@@ -72,11 +72,11 @@ class _PipelineNode:
             if value.program and self not in value.program.children:
                 value.program.children.add(self)
                 self.count += 1
-        elif type(value) != bool:
+        elif type(value) != bool and value == True:
             self.cmd.append(str(value))
 
     def add_args(self, value, type_, min_len=1, delim=" ", option=None):
-        if not value:
+        if value is None:
             return
 
         if option:
