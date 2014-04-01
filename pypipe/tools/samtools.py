@@ -4,14 +4,7 @@ from pypipe import formats
 from pypipe.utils import create_program, install_program
 
 
-install_program(cmd=["git clone --branch=bcftools+calling \
-                         git://github.com/samtools/htslib.git",
-                     "git clone git://github.com/samtools/samtools.git",
-                     "cd samtools",
-                     "make",
-                     "mv samtools ~/.pypipe"
-                    ],
-                program_name="samtools")
+install_program("samtools.sh", "samtools")
 
 
 def view(_in, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,

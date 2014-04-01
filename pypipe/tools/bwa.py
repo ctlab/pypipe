@@ -4,12 +4,7 @@ from pypipe import formats
 from pypipe.utils import create_program, install_program
 
 
-install_program(cmd=["git clone https://github.com/lh3/bwa.git",
-                     "cd bwa",
-                     "make",
-                     "mv bwa ~/.pypipe"
-                    ],
-                program_name="bwa")
+install_program("bwa.sh", "bwa")
 
 
 def mem(_ref, _in1, _out, _in2=None, t=None, k=None, w=None, d=None, r=None,

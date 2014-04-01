@@ -7,6 +7,8 @@ import tempfile
 
 from pypipe import formats
 
+_pypipe_dir = os.path.join(os.environ['HOME'], '.pypipe')
+_install_dir = os.path.join(_pypipe_dir, "install-scripts")
 
 _to_run = []
 _running = []
@@ -37,9 +39,14 @@ class _PipelineNode:
         cmd_msg = " ".join(self.cmd) + (self.output.name !=
                 self.log.name and (" > " + self.output.name) or "")
         sys.stderr.write(cmd_msg + "\n")  # debug
-        subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
+        try:
+            subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
+        except OSError:
+            self.cmd[0] = os.path.join(_pypipe_dir, self.cmd[0])
+            subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
         self.output.close()
         self.log.close()
+        sys.stderr.write("'" + cmd_msg + "' complete\n")  # debug
 
     def add_arg(self, value, type_, option=None):
         if value is None:
@@ -146,6 +153,7 @@ def run_pipeline():
 
 def _program_exists(program_name):
     paths = os.environ['PATH'].split(":")
+    paths.append(_pypipe_dir)
     for path in paths:
         f = os.path.join(path, program_name)
         if os.path.isfile(f):
@@ -153,15 +161,15 @@ def _program_exists(program_name):
     return False
 
 
-def _install_program(cmd):
-    tmp_dir = tempfile.mkdtemp()
-    cmd = ["cd " + tmp_dir] + cmd
-    os.system(" && ".join(cmd))
+def _install_program(script_name):
+    install_script = os.path.join(_install_dir, "install.sh")
+    program_script = os.path.join(_install_dir, script_name)
+    subprocess.call(["bash", install_script, program_script])
 
 
-def install_program(cmd, program_name):
+def install_program(script_name, program_name):
     if not _program_exists(program_name):
         print program_name, "is not installed. Installing..."
-        _install_program(cmd)
+        _install_program(script_name)
         print program_name, "installed."
 
