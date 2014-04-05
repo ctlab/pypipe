@@ -86,6 +86,12 @@ class Qseq(_File):
         super(Qseq, self).__init__(path, program)
 
 
+class Pileup(_File):
+    
+    def __init__(self, path, program=None):
+        super(Pipleup, self).__init__(path, program)
+
+
 class Bowtie2Index(_File):
 
     def __init__(self, path, program=None):
