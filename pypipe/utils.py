@@ -46,11 +46,15 @@ class _PipelineNode:
             subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
         self.output.close()
         self.log.close()
-        sys.stderr.write("'" + cmd_msg + "' complete\n")  # debug
+        #sys.stderr.write("'" + cmd_msg + "' complete\n")  # debug
 
     def add_arg(self, value, type_, option=None):
-        if value is None:
+        if value is None or value == False:
             return
+        #if value == "IonXpress_021.fastq":
+        #    print "add_arg value=", value
+        #    print "add_arg type_=", type_
+        #    print "add_arg option=", option
         if type(value) == int and type_ == float:
             value = float(value)
 
@@ -79,15 +83,17 @@ class _PipelineNode:
             if value.program and self not in value.program.children:
                 value.program.children.add(self)
                 self.count += 1
-        elif type(value) != bool and value == True:
+        elif type(value) != bool:
             self.cmd.append(str(value))
 
     def add_args(self, value, type_, min_len=1, delim=" ", option=None):
         if value is None:
             return
+        #print "delim =", delim # debug
 
         if option:
             msg = self.name + ": '" + option + "' must be list of "
+            #print "option =", option # debug
         else:
             msg = self.name + ": expected list of "
         if issubclass(type_, formats._File):
@@ -119,7 +125,10 @@ class _PipelineNode:
                     if v.program and self not in v.program.children:
                         v.program.children.add(self)
                         self.count += 1
-                    value = [v.path for v in value]
+            if issubclass(type_, formats._File):
+                value = [v.path for v in value]
+            #print "value =", value
+            #print "=", delim.join(map(str, value))
             self.add_arg(delim.join(map(str, value)), str, option)
 
     def _run(self):
