@@ -7,12 +7,10 @@ from pypipe.utils import create_program, install_program
 install_program("freebayes.sh", "freebayes")
 
 
-# TODO comments
-# TODO need test
-def freebayes(_in, vcf, b=None, bam=None, L=None, bam_list=None,
-              f=None, fasta_reference=None, t=None, targets=None, r=None,
+def freebayes(_in, v, f, vcf=None, b=None, bam=None, L=None, bam_list=None,
+              fasta_reference=None, t=None, targets=None, r=None,
               region=None, s=None, samples=None, populations=None, A=None,
-              cnv_map=None, trace=None, failed-alleles=None,
+              cnv_map=None, trace=None, failed_alleles=None,
               variant_input=None, l=None, only_use_input_alleles=None,
               haplotype_basis_alleles=None, report_all_haplotype_alleles=None,
               report_monorphic=None, P=None, pvar=None, T=None, theta=None,
@@ -22,13 +20,13 @@ def freebayes(_in, vcf, b=None, bam=None, L=None, bam_list=None,
               no_indels=None, X=None, no_mnps=None, u=None, no_complex=None,
               n=None, use_best_n_alleles=None, E=None, max_complex_gap=None,
               haplotype_length=None, min_repeat_length=None,
-              min_repeat_entropy=None, no_partial_observations=None, _0=None,
+              min_repeat_entropy=None, no_partial_observations=None, O=None,
               dont_left_align_indels=None, _4=None, use_duplicate_reads=None,
               m=None, min_mapping_quality=None, q=None, min_base_quality=None,
-              R=None, min_supportiong_allele_qsum=None, Y=None,
+              R=None, min_supporting_allele_qsum=None, Y=None,
               min_supporting_mapping_qsum=None, Q=None,
               mismatch_base_quality_threshold=None, U=None,
-              read_mismatch_limit=None, z=None, log=None
+              read_mismatch_limit=None, z=None, log=None,
               read_max_mismatch_fraction=None, read_snp_limit=None, e=None,
               read_indel_limit=None, _0=None, standard_filters=None,
               F=None, min_alternate_fraction=None, C=None,
@@ -46,6 +44,8 @@ def freebayes(_in, vcf, b=None, bam=None, L=None, bam_list=None,
               genotype_variant_threshold=None, j=None,
               use_mapping_quality=None, H=None, harmonic_indel_quality=None,
               D=None, read_dependence_factor=None, genotype_qualities=None):
+    if v and vcf:
+        sys.exit("Use only 'v' or 'vcf'")
     if b and bam:
         sys.exit("Use only 'b' or 'bam'")
     if L and bam_list:
@@ -84,7 +84,8 @@ def freebayes(_in, vcf, b=None, bam=None, L=None, bam_list=None,
         sys.exit("Use only 'u' or 'no_complex'")
     if n and use_best_n_alleles:
         sys.exit("Use only 'n' or 'use_best_n_alleles'")
-    if E and (max_complex_gap or haplotype_length):
+    if E and max_complex_gap or E and haplotype_length or \
+            max_complex_gap and haplotype_length:
         sys.exit("Use only 'E' or 'max_complex_gap' or 'haplotype_length'")
     if O and dont_left_align_indels:
         sys.exit("Use only 'O' or 'dont_left_align_indels'")
@@ -141,6 +142,7 @@ def freebayes(_in, vcf, b=None, bam=None, L=None, bam_list=None,
     program = create_program("freebayes", log)
     program.add_arg(b, formats.Bam, "-b")
     program.add_arg(bam, formats.Bam, "--bam")
+    program.add_arg(v, str, "-v")
     program.add_arg(vcf, str, "--vcf")
     program.add_arg(f, formats.Fasta, "-f")
     program.add_arg(fasta_reference, formats.Fasta, "--fasta-reference")
@@ -153,8 +155,8 @@ def freebayes(_in, vcf, b=None, bam=None, L=None, bam_list=None,
     program.add_arg(populations, formats.TextFile, "--populations")
     program.add_arg(A, formats.Bed, "-A")
     program.add_arg(cnv_map, formats.Bed, "--cnv-map")
-    #program.add_arg(trace, formats.TextFile, "--trace")
-    #program.add_arg(failed_alleles, formats.Bed, "--failed-alleles")
+    program.add_arg(trace, formats.TextFile, "--trace")
+    program.add_arg(failed_alleles, formats.Bed, "--failed-alleles")
     program.add_arg(variant_input, formats.Vcf, "--variant-input")
     program.add_arg(l, bool, "-l")
     program.add_arg(only_use_input_alleles, bool, "--only-use-input-alleles")
@@ -235,7 +237,33 @@ def freebayes(_in, vcf, b=None, bam=None, L=None, bam_list=None,
     program.add_arg(a, bool, "-a")
     program.add_arg(allele_balance_priors_off, bool,
             "--allele-balance-priors-off")
-
-    #TODO genotype likelihoods
-    #TODO algorithmic features
-
+    program.add_arg(observation_bias, formats.TextFile, "--observation-bias")
+    program.add_arg(base_quality_cap, int, "--base-quality-cap")
+    program.add_arg(experimental_gls, bool, "--experimental-gls")
+    program.add_arg(prob_contamination, float, "--prob-contamination")
+    program.add_arg(contamination_estimates, formats.TextFile,
+            "--contamination-estimates")
+    program.add_arg(report_genotype_likelihood_max, bool,
+            "--report-genotype-likelihood-max")
+    program.add_arg(B, int, "-B")
+    program.add_arg(genotyping_max_iterations, int,
+            "--genotype-max-iterations")
+    program.add_arg(genotyping_max_banddepth, int, "--genotype-max-banddepth")
+    program.add_args(W, int, 2, ",", "-W")
+    program.add_args(posterior_integration_limits, int, 2, ",",
+            "--posterior-integration-limits")
+    program.add_arg(exclude_unobserved_genotypes, bool,
+            "--exclude-unobserved-genotypes")
+    program.add_arg(S, int, "-S")
+    program.add_arg(genotype_variant_threshold, int,
+            "--genotype-variant-threshold")
+    program.add_arg(j, bool, "-j")
+    program.add_arg(use_mapping_quality, bool, "--use-mapping-quality")
+    program.add_arg(H, bool, "-H")
+    program.add_arg(harmonic_indel_quality, bool, "--harmonic-indel-quality")
+    program.add_arg(D, int, "-D")
+    program.add_arg(read_dependence_factor, int, "--read-dependence-factor")
+    program.add_arg(genotype_qualities, bool, "--genotype-qualities")
+    program.add_args(_in, formats.Bam, 1)
+    return formats.Vcf(vcf, program)
+    

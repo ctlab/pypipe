@@ -7,6 +7,7 @@ import tempfile
 
 from pypipe import formats
 
+
 _pypipe_dir = os.path.join(os.environ['HOME'], '.pypipe')
 _install_dir = os.path.join(_pypipe_dir, "install-scripts")
 
