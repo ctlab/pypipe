@@ -9,7 +9,7 @@ install_program("VarScan.sh", "VarScan.jar")
 
 def pileup2snp(_in, _out, min_coverage=None, min_reads2=None, log=None,
                min_avg_qual=None, min_var_freq=None, p_value=None):
-    program = create_program("java -jar VarScan.jar", log, _out)
+    program = create_program("VarScan.jar pileup2snp", log, _out, type_="jar")
     program.add_args(_in, formats.Pileup, 1)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
