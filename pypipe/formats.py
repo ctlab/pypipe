@@ -94,7 +94,7 @@ class Snp(_File):
 
 
 class Pileup(_File):
-    
+   
     def __init__(self, path, program=None):
         super(Pileup, self).__init__(path, program)
 
