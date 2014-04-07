@@ -1,6 +1,7 @@
 import os.path
 import sys
 
+
 class _File(object):
 
     def __init__(self, path, program):
@@ -84,6 +85,18 @@ class Qseq(_File):
     
     def __init__(self, path, program=None):
         super(Qseq, self).__init__(path, program)
+
+
+class Snp(_File):
+    
+    def __init__(self, path, program=None):
+        super(Snp, self).__init__(path, program)
+
+
+class Pileup(_File):
+    
+    def __init__(self, path, program=None):
+        super(Pileup, self).__init__(path, program)
 
 
 class Bowtie2Index(_File):
