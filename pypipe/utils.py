@@ -17,12 +17,11 @@ _running = []
 
 class _PipelineNode:
 
-    def __init__(self, name, log=None, output=None, index=0):
+    def __init__(self, name, log=None, output=None):
         if output and type(output) != str:
             sys.exit(name + ": output must be string")
         if log and type(log) != str:
             sys.exit(name + ": log must be string")
-        self.i = index
         self.name = name
         self.cmd = name.split(" ")
         self.children = set()
@@ -44,7 +43,7 @@ class _PipelineNode:
         try:
             subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
         except OSError:
-            self.cmd[self.i] = os.path.join(_pypipe_dir, self.cmd[self.i])
+            self.cmd[0] = os.path.join(_pypipe_dir, self.cmd[0])
             subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
         self.output.close()
         self.log.close()
@@ -130,12 +129,17 @@ class _PipelineNode:
         self.thread.start()
 
 
+def _join_pypipe_path(name, i):
+    name = name.split(" ")
+    name[i] = os.path.join(_pypipe_dir, name[i])
+    name = " ".join(name)
+    return name
+
+
 def create_program(name, output=None, log=None, type_=None):
     if type_ == "jar":
-        name = "java -jar " + os.path.join(_pypipe_dir, name)
-        program = _PipelineNode(name, output, log, 2)
-    else:
-        program = _PipelineNode(name, output, log)
+        name = _join_pypipe_path(name, 2)
+    program = _PipelineNode(name, output, log)
     _to_run.append(program)
     return program
 

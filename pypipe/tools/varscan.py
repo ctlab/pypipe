@@ -9,7 +9,8 @@ install_program("VarScan.sh", "VarScan.jar")
 
 def pileup2snp(_in, _out, min_coverage=None, min_reads2=None, log=None,
                min_avg_qual=None, min_var_freq=None, p_value=None):
-    program = create_program("VarScan.jar pileup2snp", log, _out, type_="jar")
+    program = create_program("java -jar VarScan.jar pileup2snp",
+            log, _out, type_="jar")
     program.add_args(_in, formats.Pileup, 1)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
@@ -21,7 +22,7 @@ def pileup2snp(_in, _out, min_coverage=None, min_reads2=None, log=None,
 
 def pileup2indel(_in, _out, min_coverage=None, min_reads2=None, log=None,
                  min_avg_qual=None, min_var_freq=None, p_value=None):
-    program = create_program("VarScan.jar pileup2indel", log,
+    program = create_program("java -jar VarScan.jar pileup2indel", log,
             _out, type_="jar")
     program.add_args(_in, formats.Pileup, 1)
     program.add_arg(min_coverage, int, "--min-coverage")
@@ -34,7 +35,8 @@ def pileup2indel(_in, _out, min_coverage=None, min_reads2=None, log=None,
 
 def pileup2cns(_in, _out, min_coverage=None, min_reads2=None, log=None,
                min_avg_qual=None, min_var_freq=None, p_value=None):
-    program = create_program("VarScan.jar pileup2cns", log, _out, type_="jar")
+    program = create_program("java -jar VarScan.jar pileup2cns",
+            log, _out, type_="jar")
     program.add_args(_in, formats.Pileup, 1)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
@@ -48,7 +50,8 @@ def mpileup2snp(_in, _out, min_coverage=None, min_reads2=None, log=None,
                 min_avg_qual=None, min_var_freq=None, mon_freq_for_hom=None,
                 p_value=None, strand_filter=None, output_vcf=None,
                 variants=None):
-    program = create_program("VarScan.jar mpileup2snp", log, _out, type_="jar")
+    program = create_program("java -jar VarScan.jar mpileup2snp",
+            log, _out, type_="jar")
     program.add_args(_in, formats.Pileup, 1)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
@@ -69,7 +72,7 @@ def mpileup2indel(_in, _out, min_coverage=None, min_reads2=None, log=None,
                   min_avg_qual=None, min_var_freq=None, mon_freq_for_hom=None,
                   p_value=None, strand_filter=None, output_vcf=None,
                   variants=None):
-    program = create_program("VarScan.jar mpileup2indel",
+    program = create_program("java -jar VarScan.jar mpileup2indel",
             log, _out, type_="jar")
     program.add_args(_in, formats.Pileup, 1)
     program.add_arg(min_coverage, int, "--min-coverage")
@@ -91,7 +94,8 @@ def mpileup2cns(_in, _out, min_coverage=None, min_reads2=None, log=None,
                 min_avg_qual=None, min_var_freq=None, mon_freq_for_hom=None,
                 p_value=None, strand_filter=None, output_vcf=None,
                 variants=None):
-    program = create_program("VarScan.jar mpileup2cns", log, _out, type_="jar")
+    program = create_program("java -jar VarScan.jar mpileup2cns",
+            log, _out, type_="jar")
     program.add_args(_in, formats.Pileup, 1)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
@@ -106,4 +110,13 @@ def mpileup2cns(_in, _out, min_coverage=None, min_reads2=None, log=None,
         return formats.Vcf(_out, program)
     else:
         return formats.Cns(_out, program)
+
+
+def somatic(normal, tumor, output, output_snp=None, output_indel=None,
+            min_coverage=None, min_coverage_normal=None,
+            min_coverage_tumor=None, min_var_freq=None, min_freq_for_hom=None,
+            normal_purity=None, tumor_purity=None, p_value=None,
+            somatic_p_value=None, strand_filter=None, validation=None):
+    # TODO need for speed
+    return None
 
