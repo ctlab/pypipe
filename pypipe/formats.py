@@ -99,6 +99,18 @@ class Pileup(_File):
         super(Pileup, self).__init__(path, program)
 
 
+class Indel(_File):
+   
+    def __init__(self, path, program=None):
+        super(Indel, self).__init__(path, program)
+
+
+class Cns(_File):
+   
+    def __init__(self, path, program=None):
+        super(Cns, self).__init__(path, program)
+
+
 class Bowtie2Index(_File):
 
     def __init__(self, path, program=None):
