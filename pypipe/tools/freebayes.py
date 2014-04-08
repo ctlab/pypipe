@@ -155,7 +155,7 @@ def freebayes(_in, v, f, vcf=None, b=None, bam=None, L=None, bam_list=None,
     program.add_arg(populations, formats.TextFile, "--populations")
     program.add_arg(A, formats.Bed, "-A")
     program.add_arg(cnv_map, formats.Bed, "--cnv-map")
-    program.add_arg(trace, formats.TextFile, "--trace")
+    program.add_arg(trace, str, "--trace")
     program.add_arg(failed_alleles, formats.Bed, "--failed-alleles")
     program.add_arg(variant_input, formats.Vcf, "--variant-input")
     program.add_arg(l, bool, "-l")
