@@ -64,9 +64,9 @@ def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None, E=None,
     program.add_arg(o, int, "-o")
     program.add_arg(P, str, "-P")
     if u or g:
-        return formats.Pileup(_out, program)
-    else
         return formats.Bcf(_out, program)
+    else:
+        return formats.Pileup(_out, program)
 
 
 def reheader(_in_header, _in, log=None):
