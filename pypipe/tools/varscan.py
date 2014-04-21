@@ -7,52 +7,52 @@ from pypipe.utils import create_program, install_program
 install_program("VarScan.sh", "VarScan.jar")
 
 
-def pileup2snp(_in, _out, min_coverage=None, min_reads2=None, log=None,
+def pileup2snp(in_, out, min_coverage=None, min_reads2=None, log=None,
                min_avg_qual=None, min_var_freq=None, p_value=None):
     program = create_program("java -jar VarScan.jar pileup2snp",
-            log, _out, type_="jar")
-    program.add_arg(_in, formats.Pileup)
+            log, out, type_="jar")
+    program.add_arg(in_, formats.Pileup)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
     program.add_arg(min_avg_qual, int, "--min-avg-qual")
     program.add_arg(min_var_freq, float, "--min-var-freq")
     program.add_arg(p_value, float, "--p-value")
-    return formats.Snp(_out, program)
+    return formats.Snp(out, program)
 
 
-def pileup2indel(_in, _out, min_coverage=None, min_reads2=None, log=None,
+def pileup2indel(in_, out, min_coverage=None, min_reads2=None, log=None,
                  min_avg_qual=None, min_var_freq=None, p_value=None):
     program = create_program("java -jar VarScan.jar pileup2indel", log,
-            _out, type_="jar")
-    program.add_arg(_in, formats.Pileup)
+            out, type_="jar")
+    program.add_arg(in_, formats.Pileup)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
     program.add_arg(min_avg_qual, int, "--min-avg-qual")
     program.add_arg(min_var_freq, float, "--min-var-freq")
     program.add_arg(p_value, float, "--p-value")
-    return formats.Indel(_out, program)
+    return formats.Indel(out, program)
 
 
-def pileup2cns(_in, _out, min_coverage=None, min_reads2=None, log=None,
+def pileup2cns(in_, out, min_coverage=None, min_reads2=None, log=None,
                min_avg_qual=None, min_var_freq=None, p_value=None):
     program = create_program("java -jar VarScan.jar pileup2cns",
-            log, _out, type_="jar")
-    program.add_arg(_in, formats.Pileup)
+            log, out, type_="jar")
+    program.add_arg(in_, formats.Pileup)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
     program.add_arg(min_avg_qual, int, "--min-avg-qual")
     program.add_arg(min_var_freq, float, "--min-var-freq")
     program.add_arg(p_value, float, "--p-value")
-    return formats.Cns(_out, program)
+    return formats.Cns(out, program)
 
 
-def mpileup2snp(_in, _out, min_coverage=None, min_reads2=None, log=None,
+def mpileup2snp(in_, out, min_coverage=None, min_reads2=None, log=None,
                 min_avg_qual=None, min_var_freq=None, mon_freq_for_hom=None,
                 p_value=None, strand_filter=None, output_vcf=None,
                 variants=None):
     program = create_program("java -jar VarScan.jar mpileup2snp",
-            log, _out, type_="jar")
-    program.add_arg(_in, formats.Pileup)
+            log, out, type_="jar")
+    program.add_arg(in_, formats.Pileup)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
     program.add_arg(min_avg_qual, int, "--min-avg-qual")
@@ -63,18 +63,18 @@ def mpileup2snp(_in, _out, min_coverage=None, min_reads2=None, log=None,
     program.add_arg(output_vcf, bool, "--output-vcf")
     program.add_arg(variants, int, "--variants")
     if output_vcf:
-        return formats.Vcf(_out, program)
+        return formats.Vcf(out, program)
     else:
-        return formats.Snp(_out, program)
+        return formats.Snp(out, program)
 
 
-def mpileup2indel(_in, _out, min_coverage=None, min_reads2=None, log=None,
+def mpileup2indel(in_, out, min_coverage=None, min_reads2=None, log=None,
                   min_avg_qual=None, min_var_freq=None, mon_freq_for_hom=None,
                   p_value=None, strand_filter=None, output_vcf=None,
                   variants=None):
     program = create_program("java -jar VarScan.jar mpileup2indel",
-            log, _out, type_="jar")
-    program.add_arg(_in, formats.Pileup)
+            log, out, type_="jar")
+    program.add_arg(in_, formats.Pileup)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
     program.add_arg(min_avg_qual, int, "--min-avg-qual")
@@ -85,17 +85,17 @@ def mpileup2indel(_in, _out, min_coverage=None, min_reads2=None, log=None,
     program.add_arg(output_vcf, bool, "--output-vcf")
     program.add_arg(variants, int, "--variants")
     if output_vcf:
-        return formats.Vcf(_out, program)
+        return formats.Vcf(out, program)
     else:
-        return formats.Indel(_out, program)
+        return formats.Indel(out, program)
 
 
-def mpileup2cns(_in, _out, min_coverage=None, min_reads2=None, log=None,
+def mpileup2cns(in_, out, min_coverage=None, min_reads2=None, log=None,
                 min_avg_qual=None, min_var_freq=None, mon_freq_for_hom=None,
                 p_value=None, strand_filter=None, output_vcf=None,
                 variants=None):
     program = create_program("java -jar VarScan.jar mpileup2cns",
-            log, _out, type_="jar")
+            log, out, type_="jar")
     program.add_arg(_in, formats.Pileup)
     program.add_arg(min_coverage, int, "--min-coverage")
     program.add_arg(min_reads2, int, "--min-reads2")
@@ -107,9 +107,9 @@ def mpileup2cns(_in, _out, min_coverage=None, min_reads2=None, log=None,
     program.add_arg(output_vcf, bool, "--output-vcf")
     program.add_arg(variants, int, "--variants")
     if output_vcf:
-        return formats.Vcf(_out, program)
+        return formats.Vcf(out, program)
     else:
-        return formats.Cns(_out, program)
+        return formats.Cns(out, program)
 
 
 def somatic(normal, tumor, output, output_snp=None, output_indel=None,

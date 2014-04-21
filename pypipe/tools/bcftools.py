@@ -8,15 +8,15 @@ install_program("bcftools.sh", "bcftools")
 
 
 # TODO index
-def view(_in, _out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
+def view(in_, out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
          Q=None, s=None, S=None, u=None, c=None, d=None, e=None, g=None,
          i=None, p=None, P=None, t=None, T=None, v=None, _1=None, U=None,
          X=None, log=None):
-    program = create_program("bcftools view", log, _out)
+    program = create_program("bcftools view", log, out)
     if S:
-        program.add_arg(_in, formats.Vcf)
+        program.add_arg(in_, formats.Vcf)
     else:
-        program.add_arg(_in, formats.Bcf)
+        program.add_arg(in_, formats.Bcf)
     program.add_arg(A, bool, "-A")
     program.add_arg(b, bool, "-b")
     program.add_arg(D, formats.TextFile, "-D")
@@ -42,13 +42,13 @@ def view(_in, _out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
     program.add_arg(U, int, "-U")
     program.add_arg(X, float, "-X")
     if b:
-        return formats.Bcf(_out, program)
+        return formats.Bcf(out, program)
     else:
-        return formats.Vcf(_out, program)
+        return formats.Vcf(out, program)
 
 
-def cat(_in, _out, log=None):
-    program = create_program("bcftools cat", log, _out)
-    program.add_args(_in, formats.Bcf)
-    return formats.Bcf(_out, program)
+def cat(in_, out, log=None):
+    program = create_program("bcftools cat", log, out)
+    program.add_args(in_, formats.Bcf)
+    return formats.Bcf(out, program)
 

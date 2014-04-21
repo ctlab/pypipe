@@ -7,14 +7,14 @@ from pypipe.utils import create_program, install_program
 install_program("samtools.sh", "samtools")
 
 
-def view(_in, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
+def view(in_, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
          r=None, R=None, S=None, c=None, t=None, u=None, log=None,
          regions=None):
     program = create_program("samtools view", log)
     if S:
-        program.add_arg(_in, formats.Sam)
+        program.add_arg(in_, formats.Sam)
     else:
-        program.add_arg(_in, formats.Bam)
+        program.add_arg(in_, formats.Bam)
     program.add_arg(o, str, "-o")
     program.add_arg(b, bool, "-b")
     program.add_arg(f, int, "-f")
@@ -36,11 +36,11 @@ def view(_in, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
         return formats.Sam(o, program)
 
 
-def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None, E=None,
+def mpileup(in_, out, _6=None, A=None, B=None, b=None, C=None, d=None, E=None,
             f=None, l=None, q=None, Q=None, r=None, D=None, g=None, S=None,
             u=None, e=None, h=None, I=None, L=None, o=None, P=None, log=None):
-    program = create_program("samtools mpileup", log, _out)
-    program.add_args(_in, formats.Bam)
+    program = create_program("samtools mpileup", log, out)
+    program.add_args(in_, formats.Bam)
     program.add_arg(_6, bool, "-6")
     program.add_arg(A, bool, "-A")
     program.add_arg(B, bool, "-B")
@@ -64,40 +64,40 @@ def mpileup(_in, _out, _6=None, A=None, B=None, b=None, C=None, d=None, E=None,
     program.add_arg(o, int, "-o")
     program.add_arg(P, str, "-P")
     if u or g:
-        return formats.Bcf(_out, program)
+        return formats.Bcf(out, program)
     else:
-        return formats.Pileup(_out, program)
+        return formats.Pileup(out, program)
 
 
-def reheader(_in_header, _in, log=None):
+def reheader(in_header, in_, log=None):
     program = create_program("samtools reheader", log)
-    program.add_arg(_in_header, formats.Sam)
-    program.add_arg(_in, formats.Bam)
-    return formats.Bam(_in.path, program)
+    program.add_arg(in_header, formats.Sam)
+    program.add_arg(in_, formats.Bam)
+    return formats.Bam(in_.path, program)
 
 
-def cat(_in, o, h=None, log=None):
+def cat(in_, o, h=None, log=None):
     program = create_program("samtools cat", log)
     program.add_arg(h, formats.Sam, "-h")
     program.add_arg(o, str, "-o")
-    program.add_args(_in, formats.Bam)
+    program.add_args(in_, formats.Bam)
     return formats.Bam(o, program)
     
 
-def sort(_in, _out, n=None, m=None, log=None):
+def sort(in_, out, n=None, m=None, log=None):
     program = create_program("samtools sort", log)
-    program.add_arg(_in, formats.Bam)
-    program.add_arg(_out, str)
+    program.add_arg(in_, formats.Bam)
+    program.add_arg(out, str)
     program.add_arg(n, bool, "-n")
     program.add_arg(m, int, "-m")
-    return formats.Bam(_out + ".bam", program)
+    return formats.Bam(out + ".bam", program)
 
 
-def merge(_in, _out, _1=None, f=None, h=None, n=None,
+def merge(in_, out, _1=None, f=None, h=None, n=None,
           R=None, r=None, u=None, log=None):
     program = create_program("samtools merge", log)
-    program.add_arg(_out, str)
-    program.add_args(_in, formats.Bam, 2)
+    program.add_arg(out, str)
+    program.add_args(in_, formats.Bam, 2)
     program.add_arg(_1, bool, "-1")
     program.add_arg(f, bool, "-f")
     program.add_arg(h, formats.Sam, "-h")
@@ -105,34 +105,34 @@ def merge(_in, _out, _1=None, f=None, h=None, n=None,
     program.add_arg(R, str, "-R")
     program.add_arg(r, bool, "-r")
     program.add_arg(u, bool, "-u")
-    return formats.Bam(_out, program)
+    return formats.Bam(out, program)
 
 
-def index(_in, log=None):
+def index(in_, log=None):
     program = create_program("samtools index", log)
-    program.add_arg(_in, formats.Bam)
-    return formats.Bai(_in.path + ".bai", program)
+    program.add_arg(in_, formats.Bam)
+    return formats.Bai(in_.path + ".bai", program)
 
 
-def faidx(_in, regions=None, log=None):
+def faidx(in_, regions=None, log=None):
     program = create_program("samtools faidx", log)
-    program.add_arg(_in, formats.Fasta)
+    program.add_arg(in_, formats.Fasta)
     program.add_args(regions, str)
-    return formats.Fai(_in.path + ".fai", program)
+    return formats.Fai(in_.path + ".fai", program)
 
 
-def rmdup(_in, _out, s=None, S=None, log=None):
+def rmdup(in_, out, s=None, S=None, log=None):
     program = create_program("samtools rmdup", log)
     program.add_arg(s, bool, "-s")
     program.add_arg(S, bool, "-S")
-    program.add_arg(_in, formats.Bam)
-    program.add_arg(_out, str)
-    return formats.Bam(_out, program)
+    program.add_arg(in_, formats.Bam)
+    program.add_arg(out, str)
+    return formats.Bam(out, program)
 
 
-def calmd(_in, _ref, _out, A=None, e=None, u=None, b=None, S=None, C=None,
+def calmd(in_, ref, out, A=None, e=None, u=None, b=None, S=None, C=None,
           r=None, E=None, log=None):
-    program = create_program("samtools calmd", log, _out)
+    program = create_program("samtools calmd", log, out)
     program.add_arg(A, bool, "-A")
     program.add_arg(e, bool, "-e")
     program.add_arg(u, bool, "-u")
@@ -142,12 +142,12 @@ def calmd(_in, _ref, _out, A=None, e=None, u=None, b=None, S=None, C=None,
     program.add_arg(r, bool, "-r")
     program.add_arg(E, bool, "-E")
     if S:
-        program.add_arg(_in, formats.Sam)
+        program.add_arg(in_, formats.Sam)
     else:
-        program.add_arg(_in, formats.Bam)
-    program.add_arg(_ref, formats.Fasta)
+        program.add_arg(in_, formats.Bam)
+    program.add_arg(ref, formats.Fasta)
     if u or b:
-        return formats.Bam(_out, program)
+        return formats.Bam(out, program)
     else:
-        return formats.Sam(_out, program)
+        return formats.Sam(out, program)
 

@@ -7,7 +7,7 @@ from pypipe.utils import create_program, install_program
 install_program("freebayes.sh", "freebayes")
 
 
-def freebayes(_in, v, f, vcf=None, b=None, bam=None, L=None, bam_list=None,
+def freebayes(in_, v, f, vcf=None, b=None, bam=None, L=None, bam_list=None,
               fasta_reference=None, t=None, targets=None, r=None,
               region=None, s=None, samples=None, populations=None, A=None,
               cnv_map=None, trace=None, failed_alleles=None,
@@ -264,6 +264,6 @@ def freebayes(_in, v, f, vcf=None, b=None, bam=None, L=None, bam_list=None,
     program.add_arg(D, int, "-D")
     program.add_arg(read_dependence_factor, int, "--read-dependence-factor")
     program.add_arg(genotype_qualities, bool, "--genotype-qualities")
-    program.add_args(_in, formats.Bam, 1)
+    program.add_args(in_, formats.Bam, 1)
     return formats.Vcf(vcf, program)
     

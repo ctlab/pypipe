@@ -7,10 +7,10 @@ from pypipe.utils import create_program, install_program
 install_program("bwa.sh", "bwa")
 
 
-def mem(_ref, _in1, _out, _in2=None, t=None, k=None, w=None, d=None, r=None,
+def mem(ref, in1, out, in2=None, t=None, k=None, w=None, d=None, r=None,
         c=None, P=None, B=None, O=None, E=None, L=None, U=None, p=None,
         R=None, T=None, a=None, C=None, H=None, M=None, v=None, log=None):
-    program = create_program("bwa mem", log, _out)
+    program = create_program("bwa mem", log, out)
     program.add_arg(t, int, "-t")
     program.add_arg(k, int, "-k")
     program.add_arg(w, int, "-w")
@@ -32,18 +32,18 @@ def mem(_ref, _in1, _out, _in2=None, t=None, k=None, w=None, d=None, r=None,
     program.add_arg(H, bool, "-H")
     program.add_arg(M, bool, "-M")
     program.add_arg(v, int, "-v")
-    program.add_arg(_ref, formats.BwaIndex)
-    program.add_arg(_in1, formats.Fastq)
-    program.add_arg(_in2, formats.Fastq)
-    return formats.Sam(_out, program)
+    program.add_arg(ref, formats.BwaIndex)
+    program.add_arg(in1, formats.Fastq)
+    program.add_arg(in2, formats.Fastq)
+    return formats.Sam(out, program)
 
 
-def aln(_ref, _in, _out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
+def aln(ref, in_, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
         t=None, M=None, O=None, E=None, R=None, c=None, N=None,
         q=None, I=None, B=None, b=None, _0=None, _1=None, _2=None, log=None):
-    program = create_program("bwa aln", log, _out)
-    program.add_arg(_ref, formats.BwaIndex)
-    program.add_arg(_in, formats.Fastq)
+    program = create_program("bwa aln", log, out)
+    program.add_arg(ref, formats.BwaIndex)
+    program.add_arg(in_, formats.Fastq)
     program.add_arg(n, int, '-n')
     program.add_arg(o, int, '-o')
     program.add_arg(e, int, '-e')
@@ -65,42 +65,42 @@ def aln(_ref, _in, _out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
     program.add_arg(_0, bool, '-0')
     program.add_arg(_1, bool, '-1')
     program.add_arg(_2, bool, '-2')
-    return formats.Sai(_out, program)
+    return formats.Sai(out, program)
 
 
-def samse(_ref, _sai, _in, _out, n=None, r=None, log=None):
-    program = create_program("bwa samse", log, _out)
-    program.add_arg(_ref, formats.BwaIndex)
-    program.add_arg(_sai, formats.Sai)
-    program.add_arg(_in, formats.Fastq)
+def samse(ref, sai, in_, out, n=None, r=None, log=None):
+    program = create_program("bwa samse", log, out)
+    program.add_arg(ref, formats.BwaIndex)
+    program.add_arg(sai, formats.Sai)
+    program.add_arg(in_, formats.Fastq)
     program.add_arg(n, int, "-n")
     program.add_arg(r, str, "-r")
-    return formats.Sam(_out, program)
+    return formats.Sam(out, program)
 
 
-def sampe(_ref, _sai1, _sai2, _in1, _in2, _out, a=None, o=None,
+def sampe(ref, sai1, sai2, in1, in2, out, a=None, o=None,
           P=None, n=None, N=None, r=None, log=None):
-    program = create_program("bwa sampe", log, _out)
-    program.add_arg(_ref, formats.BwaIndex)
-    program.add_arg(_sai1, formats.Sai)
-    program.add_arg(_sai2, formats.Sai)
-    program.add_arg(_in1, formats.Fastq)
-    program.add_arg(_in2, formats.Fastq)
+    program = create_program("bwa sampe", log, out)
+    program.add_arg(ref, formats.BwaIndex)
+    program.add_arg(sai1, formats.Sai)
+    program.add_arg(sai2, formats.Sai)
+    program.add_arg(in1, formats.Fastq)
+    program.add_arg(in2, formats.Fastq)
     program.add_arg(a, int, '-a')
     program.add_arg(o, int, '-o')
     program.add_arg(P, bool, '-P')
     program.add_arg(n, int, '-n')
     program.add_arg(N, int, '-N')
     program.add_arg(r, str, '-r')
-    return formats.Sam(_out, program)
+    return formats.Sam(out, program)
 
 
-def bwasw(_ref, _in1, _out, _in2=None, a=None, b=None, q=None, r=None, t=None,
+def bwasw(ref, in1, out, in2=None, a=None, b=None, q=None, r=None, t=None,
           w=None, T=None, c=None, z=None, s=None, N=None, log=None):
-    program = create_program("bwa bwasw", log, _out)
-    program.add_arg(_ref, formats.BwaIndex)
-    program.add_arg(_in1, formats.Fastq)
-    program.add_arg(_in2, formats.Fastq)
+    program = create_program("bwa bwasw", log, out)
+    program.add_arg(ref, formats.BwaIndex)
+    program.add_arg(in1, formats.Fastq)
+    program.add_arg(in2, formats.Fastq)
     program.add_arg(a, int, '-a')
     program.add_arg(b, int, '-b')
     program.add_arg(q, int, '-q')
@@ -112,5 +112,5 @@ def bwasw(_ref, _in1, _out, _in2=None, a=None, b=None, q=None, r=None, t=None,
     program.add_arg(z, int, '-z')
     program.add_arg(s, int, '-s')
     program.add_arg(N, int, '-N')
-    return formats.Sam(_out, program)
+    return formats.Sam(out, program)
 
