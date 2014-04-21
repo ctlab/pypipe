@@ -39,7 +39,7 @@ class _PipelineNode:
     def _thread_function(self):
         cmd_msg = " ".join(self.cmd) + (self.output.name !=
                 self.log.name and (" > " + self.output.name) or "")
-        sys.stderr.write(cmd_msg + "\n")  # debug
+        #sys.stderr.write(cmd_msg + "\n")  # debug
         try:
             subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
         except OSError:
