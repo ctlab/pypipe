@@ -9,6 +9,8 @@ class _File(object):
         self.program = program
         if not program:
             self.check()
+        else:
+            self.program.return_files.append(self)
 
     def check(self):
         if not os.path.isfile(self.path):

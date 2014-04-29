@@ -28,6 +28,7 @@ class _PipelineNode:
         self.children = set()
         self.count = 0
         self.labels = {}
+        self.return_files = []
         if log:
             self.log = open(log, "w")
         else:
@@ -202,12 +203,15 @@ def install_program(script_name, program_name):
 
 
 def generate_pipeline_graph(filename):
-    with open(filename, "w") as f:
+    dot_name = filename + ".dot"
+    png_name = filename + ".png"
+    with open(dot_name, "w") as f:
         d = {}
         i = 0
         f.write("digraph {\n")
         for e in _input_files:
-            f.write('\t%d [label="%s" shape=rect];\n' % (i, e.path))
+            label = e.path + "\\n(" + e.__class__.__name__ + ")"
+            f.write('\t%d [label="%s" shape=rect];\n' % (i, label))
             d[e] = i
             i += 1
         for p in _to_run:
@@ -217,8 +221,16 @@ def generate_pipeline_graph(filename):
         for e in _input_files:
             f.write('\t%d -> %d;\n' % (d[e] , d[e.next_program]))
         for p in _to_run:
-            for c in p.children:
-                f.write('\t%d -> %d [label="%s"];\n' % (d[p] , d[c], 
-                    p.labels[c]))
+            if len(p.children) > 0:
+                for c in p.children:
+                    f.write('\t%d -> %d [label="%s"];\n' % (d[p] , d[c], 
+                        p.labels[c]))
+            else:
+                for out in p.return_files:
+                    label = out.path + "\\n(" + out.__class__.__name__ + ")"
+                    f.write('\t%d [label="%s" shape=rect];\n' % (i, label))
+                    f.write('\t%d -> %d;\n' % (d[p] , i))
+                    i += 1
         f.write("}\n")
+    subprocess.call(["dot", "-Tpng", dot_name, "-o", png_name])
 
