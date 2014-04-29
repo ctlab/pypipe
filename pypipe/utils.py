@@ -13,6 +13,7 @@ _install_dir = os.path.join(_pypipe_dir, "install-scripts")
 
 _to_run = []
 _running = []
+_input_files = []
 
 
 class _PipelineNode:
@@ -85,6 +86,9 @@ class _PipelineNode:
                     self.count += 1
                 else:
                     value.program.labels[self] += ", " + value.path
+            else:
+                _input_files.append(value)
+                value.next_program = self
         elif type(value) != bool:
             self.cmd.append(str(value))
 
@@ -122,9 +126,16 @@ class _PipelineNode:
                 if type(v) != type_:
                     sys.exit(msg)
                 if isinstance(v, formats._File):
-                    if v.program and self not in v.program.children:
-                        v.program.children.add(self)
-                        self.count += 1
+                    if v.program:
+                        if self not in v.program.children:
+                            v.program.children.add(self)
+                            v.program.labels[self] = v.path
+                            self.count += 1
+                        else:
+                            v.program.labels[self] += ", " + v.path
+                    else:
+                        _input_files.append(v)
+                        v.next_program = self
             if issubclass(type_, formats._File):
                 value = [v.path for v in value]
             self.add_arg(delim.join(map(str, value)), str, option)
@@ -195,13 +206,19 @@ def generate_pipeline_graph(filename):
         d = {}
         i = 0
         f.write("digraph {\n")
+        for e in _input_files:
+            f.write('\t%d [label="%s" shape=rect];\n' % (i, e.path))
+            d[e] = i
+            i += 1
         for p in _to_run:
             f.write('\t%d [label="%s"];\n' % (i, p.name))
             d[p] = i
             i += 1
+        for e in _input_files:
+            f.write('\t%d -> %d;\n' % (d[e] , d[e.next_program]))
         for p in _to_run:
             for c in p.children:
-                f.write('\t%d -> %d[label="%s"];\n' % (d[p] , d[c], 
+                f.write('\t%d -> %d [label="%s"];\n' % (d[p] , d[c], 
                     p.labels[c]))
         f.write("}\n")
 
