@@ -4,7 +4,7 @@ from pypipe import formats
 from pypipe.utils import create_program, install_program
 
 
-install_program("bowtie2.sh", "bowtie")
+install_program("bowtie2.sh", "bowtie2")
 
 
 def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,

@@ -1,6 +1,6 @@
 from pypipe.formats import *
 from pypipe.tools import bwa, bowtie2, samtools, bcftools
-from pypipe.utils import run_pipeline 
+from pypipe.utils import run_pipeline, generate_pipeline_graph
 
 
 ref = Fasta("GRCh37.fa")
@@ -20,17 +20,7 @@ s_bam2 = samtools.sort(in_=bam2, out="sorted2")
 bcf = samtools.mpileup(in_=(s_bam1, s_bam2), out="out.bcf", u=True, f=ref)
 vcf = bcftools.view(in_=bcf, out="out.vcf")
 
+generate_pipeline_graph("graph.dot")
 #run_pipeline()
 
-
-data = [ref, bwa_i, i, r1, r2, sam1, bam1, s_bam1, sam2, bam2, s_bam2, bcf, vcf]
-with open("graph.dot", "w") as f:
-    f.write("digraph {\n")
-    for d in data:
-        if d.program:
-            for child in d.program.children:
-                f.write('"%s" -> "%s";\n' % (d.program.name, child.name))
-        else:
-            pass
-    f.write("}\n")
 

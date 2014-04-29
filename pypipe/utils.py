@@ -26,6 +26,7 @@ class _PipelineNode:
         self.cmd = name.split(" ")
         self.children = set()
         self.count = 0
+        self.labels = {}
         if log:
             self.log = open(log, "w")
         else:
@@ -77,9 +78,13 @@ class _PipelineNode:
             self.cmd.append(option)
         if isinstance(value, formats._File):
             self.cmd.append(value.path)
-            if value.program and self not in value.program.children:
-                value.program.children.add(self)
-                self.count += 1
+            if value.program: 
+                if self not in value.program.children:
+                    value.program.children.add(self)
+                    value.program.labels[self] = value.path
+                    self.count += 1
+                else:
+                    value.program.labels[self] += ", " + value.path
         elif type(value) != bool:
             self.cmd.append(str(value))
 
@@ -183,4 +188,20 @@ def install_program(script_name, program_name):
         print program_name, "is not installed. Installing..."
         _install_program(script_name)
         print program_name, "installed."
+
+
+def generate_pipeline_graph(filename):
+    with open(filename, "w") as f:
+        d = {}
+        i = 0
+        f.write("digraph {\n")
+        for p in _to_run:
+            f.write('\t%d [label="%s"];\n' % (i, p.name))
+            d[p] = i
+            i += 1
+        for p in _to_run:
+            for c in p.children:
+                f.write('\t%d -> %d[label="%s"];\n' % (d[p] , d[c], 
+                    p.labels[c]))
+        f.write("}\n")
 
