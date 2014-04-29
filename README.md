@@ -14,3 +14,8 @@ Writen in python2
     $ cd pypipe
     $ python2 setup.py build
     $ sudo python2 setup.py install
+
+### FAQ
+*   Installation for current user only: 
+    $ python2 setup.py install --user
+*   How to use: see example.py
