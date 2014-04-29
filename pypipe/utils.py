@@ -232,5 +232,8 @@ def generate_pipeline_graph(filename):
                     f.write('\t%d -> %d;\n' % (d[p] , i))
                     i += 1
         f.write("}\n")
-    subprocess.call(["dot", "-Tpng", dot_name, "-o", png_name])
+    try:
+        subprocess.call(["dot", "-Tpng", dot_name, "-o", png_name])
+    except OSError:
+        sys.stderr.write("Graphviz is not installed\n")
 
