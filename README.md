@@ -16,6 +16,5 @@ Writen in python2
     $ sudo python2 setup.py install
 
 ### FAQ
-*   Installation for current user only: 
-    $ python2 setup.py install --user
-*   How to use: see example.py
+*   **Installation for current user only:** python2 setup.py install --user
+*   **How to use:** see example.py
