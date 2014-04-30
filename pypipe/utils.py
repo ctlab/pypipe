@@ -11,8 +11,9 @@ from pypipe import formats
 _pypipe_dir = os.path.join(os.environ['HOME'], '.pypipe')
 _install_dir = os.path.join(_pypipe_dir, "install-scripts")
 
-_to_run = []
+_to_run = set()
 _running = []
+_all_programs = []
 _input_files = []
 
 
@@ -26,6 +27,7 @@ class _PipelineNode:
         self.name = name
         self.cmd = name.split(" ")
         self.children = set()
+        self.parents = set()
         self.count = 0
         self.labels = {}
         self.return_files = []
@@ -81,6 +83,7 @@ class _PipelineNode:
         if isinstance(value, formats._File):
             self.cmd.append(value.path)
             if value.program: 
+                self.parents.add(value.program)
                 if self not in value.program.children:
                     value.program.children.add(self)
                     value.program.labels[self] = value.path
@@ -128,6 +131,7 @@ class _PipelineNode:
                     sys.exit(msg)
                 if isinstance(v, formats._File):
                     if v.program:
+                        self.parents.add(v.program)
                         if self not in v.program.children:
                             v.program.children.add(self)
                             v.program.labels[self] = v.path
@@ -157,11 +161,24 @@ def create_program(name, output=None, log=None, type_=None):
     if type_ == "jar":
         name = _join_pypipe_path(name, 2)
     program = _PipelineNode(name, output, log)
-    _to_run.append(program)
+    _all_programs.append(program)
     return program
 
 
-def run_pipeline():
+def _generate_to_run(node):
+    _to_run.add(node)
+    if len(node.parents) > 0:
+        for parent in node.parents:
+            _generate_to_run(parent)
+
+
+
+def run_pipeline(node):
+    _generate_to_run(node.program)
+    ###
+    print len(_to_run)
+    return
+    ###
     while len(_to_run) > 0:
         for program in _to_run:
             if program.count == 0:
@@ -214,13 +231,13 @@ def generate_pipeline_graph(filename):
             f.write('\t%d [label="%s" shape=rect];\n' % (i, label))
             d[e] = i
             i += 1
-        for p in _to_run:
+        for p in _all_programs:
             f.write('\t%d [label="%s"];\n' % (i, p.name))
             d[p] = i
             i += 1
         for e in _input_files:
             f.write('\t%d -> %d;\n' % (d[e] , d[e.next_program]))
-        for p in _to_run:
+        for p in _all_programs:
             if len(p.children) > 0:
                 for c in p.children:
                     f.write('\t%d -> %d [label="%s"];\n' % (d[p] , d[c], 
