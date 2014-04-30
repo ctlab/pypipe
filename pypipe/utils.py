@@ -175,10 +175,6 @@ def _generate_to_run(node):
 
 def run_pipeline(node):
     _generate_to_run(node.program)
-    ###
-    print len(_to_run)
-    return
-    ###
     while len(_to_run) > 0:
         for program in _to_run:
             if program.count == 0:
@@ -186,7 +182,7 @@ def run_pipeline(node):
         for program in _running:
             try:
                 _to_run.remove(program)
-            except ValueError:
+            except KeyError:
                 pass
         for program in _running:
             if not program.thread.is_alive():

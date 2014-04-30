@@ -30,6 +30,6 @@ bcf = samtools.mpileup(in_=(s_bam1, s_bam2), out="out.bcf", u=True, f=ref)
 vcf = bcftools.view(in_=bcf, out="out.vcf")
 
 
-#generate_pipeline_graph("pipeline-graph")  # Create visualization picture
 run_pipeline(s_bam1)  # Run pipeline
+generate_pipeline_graph("pipeline-graph")  # Create visualization picture
 
