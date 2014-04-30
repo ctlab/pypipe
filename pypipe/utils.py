@@ -10,6 +10,7 @@ from pypipe import formats
 
 _pypipe_dir = os.path.join(os.environ['HOME'], '.pypipe')
 _install_dir = os.path.join(_pypipe_dir, "install-scripts")
+_status_file = sys.argv[0] + ".status"
 
 _to_run = set()
 _running = []
@@ -170,10 +171,21 @@ def _generate_to_run(node):
     if len(node.parents) > 0:
         for parent in node.parents:
             _generate_to_run(parent)
-
+    with open(_status_file, "r") as f:
+        complete = map(int, f.readline().split(" "))
+    for i in complete:
+        try:
+            _to_run.remove(_all_programs[i])
+        except KeyError:
+            pass
 
 
 def run_pipeline(node):
+    program_to_index = {}
+    i = 0
+    for program in _all_programs:
+        program_to_index[program] = i
+        i += 1
     _generate_to_run(node.program)
     while len(_to_run) > 0:
         for program in _to_run:
@@ -187,6 +199,9 @@ def run_pipeline(node):
         for program in _running:
             if not program.thread.is_alive():
                 _running.remove(program)
+                with open(_status_file, "w") as f:
+                    i = program_to_index[program]
+                    f.write("%d " % i)
                 for child in program.children:
                     child.count -= 1
         time.sleep(1)
