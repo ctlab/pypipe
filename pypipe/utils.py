@@ -10,7 +10,9 @@ from pypipe import formats
 
 _pypipe_dir = os.path.join(os.environ['HOME'], '.pypipe')
 _install_dir = os.path.join(_pypipe_dir, "install-scripts")
-_status_file = sys.argv[0] + ".status"
+_complete_file = "example2.py.complete"
+_failed_file = "example2.py.failed"
+_running_file = "example2.py.running"
 
 _to_run = set()
 _running = []
@@ -33,11 +35,11 @@ class _PipelineNode:
         self.labels = {}
         self.return_files = []
         if log:
-            self.log = open(log, "w")
+            self.log = log
         else:
-            self.log = open(os.devnull, "w")
+            self.log = os.devnull
         if output:
-            self.output = open(output, "w")
+            self.output = output
         else:
             self.output = self.log
         self.thread = threading.Thread(target=self._thread_function, args=())
@@ -47,13 +49,21 @@ class _PipelineNode:
                 self.log.name and (" > " + self.output.name) or "")
         #sys.stderr.write(cmd_msg + "\n")  # debug
         try:
-            subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
+            self.ret = \
+                subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
         except OSError:
             self.cmd[0] = os.path.join(_pypipe_dir, self.cmd[0])
-            subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
+            self.ret = \
+                subprocess.call(self.cmd, stdout=self.output, stderr=self.log)
+        if self.ret != 0:
+            for child in self.children:
+                _to_run.remove(child)
         self.output.close()
         self.log.close()
-        sys.stderr.write("'" + cmd_msg + "' complete\n")  # debug
+        if self.ret == 0:
+            sys.stderr.write("'" + cmd_msg + "' complete\n")  # debug
+        else:
+            sys.stderr.write("'" + cmd_msg + "' failed\n")  # debug
 
     def add_arg(self, value, type_, option=None):
         if value is None or value == False:
@@ -147,6 +157,8 @@ class _PipelineNode:
             self.add_arg(delim.join(map(str, value)), str, option)
 
     def _run(self):
+        self.log = open(self.log, "w")
+        self.output = open(self.output, "w")
         _running.append(self)
         self.thread.start()
 
@@ -171,13 +183,16 @@ def _generate_to_run(node):
     if len(node.parents) > 0:
         for parent in node.parents:
             _generate_to_run(parent)
-    with open(_status_file, "r") as f:
-        complete = map(int, f.readline().split(" "))
-    for i in complete:
-        try:
-            _to_run.remove(_all_programs[i])
-        except KeyError:
-            pass
+    if os.path.exists(_complete_file):
+        with open(_complete_file, "r") as f:
+            complete = map(int, f.readline().split(" ")[:-1])
+        for i in complete:
+            try:
+                _to_run.remove(_all_programs[i])
+                for child in _all_programs[i].children:
+                    child.count -= 1
+            except KeyError:
+                pass
 
 
 def run_pipeline(node):
@@ -187,7 +202,10 @@ def run_pipeline(node):
         program_to_index[program] = i
         i += 1
     _generate_to_run(node.program)
-    while len(_to_run) > 0:
+    while len(_to_run) > 0 or len(_running) > 0:
+        with open(_running_file, "w+") as f:
+            for program in _running:
+                f.write("%d " % program_to_index[program])
         for program in _to_run:
             if program.count == 0:
                 program._run()
@@ -196,15 +214,23 @@ def run_pipeline(node):
                 _to_run.remove(program)
             except KeyError:
                 pass
-        for program in _running:
+        running = [p for p in _running]
+        for program in running:
             if not program.thread.is_alive():
+                if program.ret == 0:
+                    log_file = _complete_file
+                else:
+                    log_file = _failed_file
                 _running.remove(program)
-                with open(_status_file, "w") as f:
+                program.log.close()
+                program.output.close()
+                with open(log_file, "a+") as f:
                     i = program_to_index[program]
                     f.write("%d " % i)
                 for child in program.children:
                     child.count -= 1
         time.sleep(1)
+    os.remove(_running_file)
 
 
 def _program_exists(program_name):
@@ -233,7 +259,22 @@ def install_program(script_name, program_name):
 def generate_pipeline_graph(filename):
     dot_name = filename + ".dot"
     png_name = filename + ".png"
-    with open(dot_name, "w") as f:
+    complete = set()
+    failed = set()
+    running = set()
+    if os.path.exists(_complete_file):
+        with open(_complete_file, "r") as f:
+            complete_i = map(int, f.readline().split(" ")[:-1])
+            complete = set([_all_programs[i] for i in complete_i])
+    if os.path.exists(_failed_file):
+        with open(_failed_file, "r") as f:
+            failed_i = map(int, f.readline().split(" ")[:-1])
+            failed = set([_all_programs[i] for i in failed_i])
+    if os.path.exists(_running_file):
+        with open(_running_file, "r") as f:
+            running_i = map(int, f.readline().split(" ")[:-1])
+            running = set([_all_programs[i] for i in running_i])
+    with open(dot_name, "w+") as f:
         d = {}
         i = 0
         f.write("digraph {\n")
@@ -243,7 +284,14 @@ def generate_pipeline_graph(filename):
             d[e] = i
             i += 1
         for p in _all_programs:
-            f.write('\t%d [label="%s"];\n' % (i, p.name))
+            f.write('\t%d [label="%s"' % (i, p.name))
+            if p in complete:
+                f.write(' style=filled fillcolor="green"')
+            elif p in failed:
+                f.write(' style=filled fillcolor="red"')
+            elif p in running:
+                f.write(' style=filled fillcolor="yellow"')
+            f.write(']\n')
             d[p] = i
             i += 1
         for e in _input_files:

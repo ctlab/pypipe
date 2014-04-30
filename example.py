@@ -11,7 +11,7 @@ r1 = Fastq("IonXpress_021.fastq")  # read 1
 r2 = Fastq("IonXpress_022.fastq")  # read 2
 
 # bowtie2 -x GRCh37 -U IonXpress_021.fastq -S out1.sam -p 1
-sam1 = bowtie2.bowtie2(x=i, U=[r1], S="out1.sam", p=1, log="bowtie_log")
+sam1 = bowtie2.bowtie2(x=i, U=[r1], S="out1.sam", p=4, log="bowtie_log")
 # samtools view -bS -o out1.bam out1.sam
 bam1 = samtools.view(in_=sam1, o="out1.bam", b=True, S=True)
 # samtools sort out1.bam > sorted1
@@ -25,11 +25,11 @@ bam2 = samtools.view(in_=sam2, o="out2.bam", b=True, S=True)
 s_bam2 = samtools.sort(in_=bam2, out="sorted2")
 
 # samtools mpileup -f GRCh37.fa -u sorted1.bam, sorted2.bam > out.bcf
-bcf = samtools.mpileup(in_=(s_bam1, s_bam2), out="out.bcf", u=True, f=ref)
+bcf = samtools.mpileup(in_=(s_bam1, s_bam2), out="out.bcf", u=True, f=ref, log="mpileup.log")
 # samtools view out.bcf > out.vcf
 vcf = bcftools.view(in_=bcf, out="out.vcf")
 
 
-#run_pipeline(s_bam1)  # Run pipeline
+run_pipeline(vcf)  # Run pipeline
 generate_pipeline_graph("pipeline-graph")  # Create visualization picture
 
