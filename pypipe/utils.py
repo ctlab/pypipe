@@ -275,7 +275,8 @@ def run_pipeline(name, node):
                     i = program_to_index[program]
                     f.write("%d " % i)
         time.sleep(1)
-    os.remove(status_files["running"])
+    if os.path.isfile(status_files["running"]):
+        os.remove(status_files["running"])
 
 
 def generate_pipeline_graph(name):
@@ -347,4 +348,12 @@ def reset_program(name, node):
     with open(status_files["complete"], "w+") as f:
         for n in complete:
             f.write("%d " % n)
+
+
+def reset_pipeline(name):
+    status_files = _get_status_files(name)
+    for k in status_files:
+        f = status_files[k]
+        if os.path.isfile(f):
+            os.remove(f)
 
