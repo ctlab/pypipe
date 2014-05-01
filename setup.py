@@ -1,16 +1,14 @@
-import os
 import distutils
+import os
 from setuptools import setup
 
+from pypipe.paths import INSTALL_DIR
 
-home_dir = os.environ['HOME']
-pypipe_dir = os.path.join(home_dir, ".pypipe")
-install_dir = os.path.join(pypipe_dir, "install-scripts")
 try:
-    os.mkdirs(install_dir)
+    os.mkdirs(INSTALL_DIR)
 except AttributeError:
     pass
-distutils.dir_util.copy_tree("install-scripts", install_dir)
+distutils.dir_util.copy_tree("install-scripts", INSTALL_DIR)
 
 setup(
     name="pypipe",
