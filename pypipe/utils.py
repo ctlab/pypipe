@@ -126,6 +126,16 @@ def _install_program(script_name, program_name):
     subprocess.call(["bash", install_script, program_script])
 
 
+def _remove_children_numbers(node, program_to_index, numbers):
+    try:
+        numbers.remove(program_to_index[node])
+    except ValueError:
+        pass
+    if len(node.children) > 0:
+        for child in node.children:
+            _remove_children_numbers(child, program_to_index, numbers)
+
+
 class _PipelineNode:
 
     def __init__(self, name, log=None, output=None):
@@ -223,6 +233,13 @@ def create_program(name, output=None, log=None, type_=None):
     return program
 
 
+def install_program(script_name, program_name):
+    if not _program_exists(program_name):
+        print program_name, "is not installed. Installing..."
+        _install_program(script_name)
+        print program_name, "installed."
+
+
 def run_pipeline(name, node):
     status_files = _get_status_files(name)
     i = 0
@@ -315,11 +332,19 @@ def generate_pipeline_graph(name):
         subprocess.call(["dot", "-Tpng", dot_file, "-o", png_file])
     except OSError:
         sys.stderr.write("Graphviz is not installed\n")
-    
 
-def install_program(script_name, program_name):
-    if not _program_exists(program_name):
-        print program_name, "is not installed. Installing..."
-        _install_program(script_name)
-        print program_name, "installed."
+
+def reset_program(name, node):
+    status_files = _get_status_files(name)
+    if os.path.exists(status_files["complete"]):
+        complete = _read_status_file(status_files["complete"])
+    program_to_index = {}
+    i = 0
+    for p in _all_programs:
+        program_to_index[p] = i
+        i += 1
+    _remove_children_numbers(node.program, program_to_index, complete)
+    with open(status_files["complete"], "w+") as f:
+        for n in complete:
+            f.write("%d " % n)
 
