@@ -10,9 +10,6 @@ from pypipe import formats
 
 _pypipe_dir = os.path.join(os.environ['HOME'], '.pypipe')
 _install_dir = os.path.join(_pypipe_dir, "install-scripts")
-_complete_file = "example2.py.complete"
-_failed_file = "example2.py.failed"
-_running_file = "example2.py.running"
 
 _to_run = set()
 _running = []
@@ -178,13 +175,14 @@ def create_program(name, output=None, log=None, type_=None):
     return program
 
 
-def _append_to_run(node):
+def _append_to_run(name, node):
+    complete_file = name + '.complete'
     _to_run.add(node)
     if len(node.parents) > 0:
         for parent in node.parents:
-            _generate_to_run(parent)
-    if os.path.exists(_complete_file):
-        with open(_complete_file, "r") as f:
+            _append_to_run(name, parent)
+    if os.path.exists(complete_file):
+        with open(complete_file, "r") as f:
             complete = map(int, f.readline().split(" ")[:-1])
         for i in complete:
             try:
@@ -205,15 +203,18 @@ def _remove_to_run(node):
             _remove_to_run(child)
 
 
-def run_pipeline(node):
+def run_pipeline(name, node):
+    complete_file = name + ".complete"
+    failed_file = name + ".failed"
+    running_file = name + ".running"
     program_to_index = {}
     i = 0
     for program in _all_programs:
         program_to_index[program] = i
         i += 1
-    _append_to_run(node.program)
+    _append_to_run(name, node.program)
     while len(_to_run) > 0 or len(_running) > 0:
-        with open(_running_file, "w+") as f:
+        with open(running_file, "w+") as f:
             for program in _running:
                 f.write("%d " % program_to_index[program])
         for program in _to_run:
@@ -228,9 +229,9 @@ def run_pipeline(node):
         for program in running:
             if not program.thread.is_alive():
                 if program.ret == 0:
-                    log_file = _complete_file
+                    log_file = complete_file
                 else:
-                    log_file = _failed_file
+                    log_file = failed_file
                 _running.remove(program)
                 program.log.close()
                 program.output.close()
@@ -240,7 +241,7 @@ def run_pipeline(node):
                 for child in program.children:
                     child.count -= 1
         time.sleep(1)
-    os.remove(_running_file)
+    os.remove(running_file)
 
 
 def _program_exists(program_name):
@@ -266,22 +267,25 @@ def install_program(script_name, program_name):
         print program_name, "installed."
 
 
-def generate_pipeline_graph(filename):
-    dot_name = filename + ".dot"
-    png_name = filename + ".png"
+def generate_pipeline_graph(name):
+    dot_name = name + ".dot"
+    png_name = name + ".png"
+    complete_file = name + ".complete"
+    failed_file = name + ".failed"
+    running_file = name + ".running"
     complete = set()
     failed = set()
     running = set()
-    if os.path.exists(_complete_file):
-        with open(_complete_file, "r") as f:
+    if os.path.exists(complete_file):
+        with open(complete_file, "r") as f:
             complete_i = map(int, f.readline().split(" ")[:-1])
             complete = set([_all_programs[i] for i in complete_i])
-    if os.path.exists(_failed_file):
-        with open(_failed_file, "r") as f:
+    if os.path.exists(failed_file):
+        with open(failed_file, "r") as f:
             failed_i = map(int, f.readline().split(" ")[:-1])
             failed = set([_all_programs[i] for i in failed_i])
-    if os.path.exists(_running_file):
-        with open(_running_file, "r") as f:
+    if os.path.exists(running_file):
+        with open(running_file, "r") as f:
             running_i = map(int, f.readline().split(" ")[:-1])
             running = set([_all_programs[i] for i in running_i])
     with open(dot_name, "w+") as f:

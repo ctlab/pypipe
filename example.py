@@ -1,6 +1,4 @@
-from pypipe.formats import *
 from pypipe.tools import bwa, bowtie2, samtools, bcftools
-from pypipe.utils import run_pipeline, generate_pipeline_graph
 
 
 # Input files
@@ -28,8 +26,4 @@ s_bam2 = samtools.sort(in_=bam2, out="sorted2")
 bcf = samtools.mpileup(in_=(s_bam1, s_bam2), out="out.bcf", u=True, f=ref, log="mpileup.log")
 # samtools view out.bcf > out.vcf
 vcf = bcftools.view(in_=bcf, out="out.vcf")
-
-
-run_pipeline(vcf)  # Run pipeline
-generate_pipeline_graph("pipeline-graph")  # Create visualization picture
 
