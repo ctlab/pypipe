@@ -178,7 +178,7 @@ def create_program(name, output=None, log=None, type_=None):
     return program
 
 
-def _generate_to_run(node):
+def _append_to_run(node):
     _to_run.add(node)
     if len(node.parents) > 0:
         for parent in node.parents:
@@ -195,13 +195,23 @@ def _generate_to_run(node):
                 pass
 
 
+def _remove_to_run(node):
+    try:
+        _to_run.remove(node)
+    except KeyError:
+        pass
+    if len(node.children) > 0:
+        for child in node.children:
+            _remove_to_run(child)
+
+
 def run_pipeline(node):
     program_to_index = {}
     i = 0
     for program in _all_programs:
         program_to_index[program] = i
         i += 1
-    _generate_to_run(node.program)
+    _append_to_run(node.program)
     while len(_to_run) > 0 or len(_running) > 0:
         with open(_running_file, "w+") as f:
             for program in _running:
