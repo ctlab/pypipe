@@ -17,4 +17,6 @@ Writen in python2
 
 ### FAQ
 *   **Installation for current user only:** python2 setup.py install --user
-*   **How to use:** see example.py
+*   **How to write pipelines:** see example.py
+*   **How to draw pipeline to png:** python2 pypipe.py example.py --draw
+*   **How to run pipeline:** python2 pypipe.py example.py --run vcf
