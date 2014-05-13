@@ -9,7 +9,7 @@ _parser = argparse.ArgumentParser(
         description="Bioinformatics pipelines framework")
 _parser.add_argument('pipeline', help='name of pipeline file',
         metavar="PIPELINE_FILE")
-_group = _parser.add_mutually_exclusive_group(required=False)
+_group = _parser.add_mutually_exclusive_group(required=True)
 _group.add_argument('--draw', action='store_true',
         help='draw pipeline to PNG')
 _group.add_argument('--run', action='store', nargs=1,
@@ -17,7 +17,7 @@ _group.add_argument('--run', action='store', nargs=1,
 _group.add_argument('--reset', action='store', nargs=1,
         metavar='NODE_NAME', help='reset pipeline from NODE')
 _group.add_argument('--resetall', action='store_true',
-        help='reset pipeline from NODE')
+        help='reset pipeline from start noe')
 _args = _parser.parse_args()
 
 execfile(_args.pipeline)

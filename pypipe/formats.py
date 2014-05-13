@@ -16,6 +16,12 @@ class _File(object):
         if not os.path.isfile(self.path):
             sys.exit("File " + self.path + " doesn't exist")
 
+    def _check_files_group(self, suff):
+        files = [self.path + s for s in suff]
+        for f in files:
+            if not os.path.isfile(f):
+                sys.exit("File " + f + " doesn't exist")
+
 
 class TextFile(_File):
 
@@ -119,11 +125,8 @@ class Bowtie2Index(_File):
         super(Bowtie2Index, self).__init__(path, program)
 
     def check(self):
-        files = [".1", ".2", ".3", ".4", ".rev.1", ".rev.2"]
-        files = [self.path + f + ".bt2" for f in files]
-        for f in files:
-            if not os.path.isfile(f):
-                sys.exit("File " + f + " doesn't exist")
+        suff = [".1", ".2", ".3", ".4", ".rev.1", ".rev.2"]
+        _check_files_group(suff)
 
 
 class BwaIndex(_File):
@@ -132,9 +135,6 @@ class BwaIndex(_File):
         super(BwaIndex, self).__init__(path, program)
 
     def check(self):
-        files = [".amb", ".ann", ".bwt", ".pac", ".sa"]
-        files = [self.path + f for f in files]
-        for f in files:
-            if not os.path.isfile(f):
-                sys.exit("File " + f + " doesn't exist")
+        suff = [".amb", ".ann", ".bwt", ".pac", ".sa"]
+        _check_files_group(suff)
 

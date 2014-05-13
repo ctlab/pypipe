@@ -1,7 +1,7 @@
 import sys
 
 from pypipe import formats
-from pypipe.utils import create_program, install_program
+from pypipe.utils import *
 
 
 install_program("bwa.sh", "bwa")
@@ -10,7 +10,7 @@ install_program("bwa.sh", "bwa")
 def mem(ref, in1, out, in2=None, t=None, k=None, w=None, d=None, r=None,
         c=None, P=None, B=None, O=None, E=None, L=None, U=None, p=None,
         R=None, T=None, a=None, C=None, H=None, M=None, v=None, log=None):
-    program = create_program("bwa mem", log, out)
+    program = pipeline.add_node("bwa mem", log, out)
     program.add_arg(t, int, "-t")
     program.add_arg(k, int, "-k")
     program.add_arg(w, int, "-w")
@@ -41,7 +41,7 @@ def mem(ref, in1, out, in2=None, t=None, k=None, w=None, d=None, r=None,
 def aln(ref, in_, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
         t=None, M=None, O=None, E=None, R=None, c=None, N=None,
         q=None, I=None, B=None, b=None, _0=None, _1=None, _2=None, log=None):
-    program = create_program("bwa aln", log, out)
+    program = pipeline.add_node("bwa aln", log, out)
     program.add_arg(ref, formats.BwaIndex)
     program.add_arg(in_, formats.Fastq)
     program.add_arg(n, int, '-n')
@@ -69,7 +69,7 @@ def aln(ref, in_, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
 
 
 def samse(ref, sai, in_, out, n=None, r=None, log=None):
-    program = create_program("bwa samse", log, out)
+    program = pipeline.add_node("bwa samse", log, out)
     program.add_arg(ref, formats.BwaIndex)
     program.add_arg(sai, formats.Sai)
     program.add_arg(in_, formats.Fastq)
@@ -80,7 +80,7 @@ def samse(ref, sai, in_, out, n=None, r=None, log=None):
 
 def sampe(ref, sai1, sai2, in1, in2, out, a=None, o=None,
           P=None, n=None, N=None, r=None, log=None):
-    program = create_program("bwa sampe", log, out)
+    program = pipeline.add_node("bwa sampe", log, out)
     program.add_arg(ref, formats.BwaIndex)
     program.add_arg(sai1, formats.Sai)
     program.add_arg(sai2, formats.Sai)
@@ -97,7 +97,7 @@ def sampe(ref, sai1, sai2, in1, in2, out, a=None, o=None,
 
 def bwasw(ref, in1, out, in2=None, a=None, b=None, q=None, r=None, t=None,
           w=None, T=None, c=None, z=None, s=None, N=None, log=None):
-    program = create_program("bwa bwasw", log, out)
+    program = pipeline.add_node("bwa bwasw", log, out)
     program.add_arg(ref, formats.BwaIndex)
     program.add_arg(in1, formats.Fastq)
     program.add_arg(in2, formats.Fastq)

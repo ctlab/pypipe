@@ -1,7 +1,7 @@
 import sys
 
 from pypipe import formats
-from pypipe.utils import create_program, install_program
+from pypipe.utils import *
 
 
 install_program("bcftools.sh", "bcftools")
@@ -12,7 +12,7 @@ def view(in_, out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
          Q=None, s=None, S=None, u=None, c=None, d=None, e=None, g=None,
          i=None, p=None, P=None, t=None, T=None, v=None, _1=None, U=None,
          X=None, log=None):
-    program = create_program("bcftools view", log, out)
+    program = pipeline.add_node("bcftools view", log, out)
     if S:
         program.add_arg(in_, formats.Vcf)
     else:
@@ -48,7 +48,7 @@ def view(in_, out, A=None, b=None, D=None, F=None, G=None, l=None, N=None,
 
 
 def cat(in_, out, log=None):
-    program = create_program("bcftools cat", log, out)
+    program = pipeline.add_node("bcftools cat", log, out)
     program.add_args(in_, formats.Bcf)
     return formats.Bcf(out, program)
 

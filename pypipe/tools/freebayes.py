@@ -139,7 +139,7 @@ def freebayes(in_, v, f, vcf=None, b=None, bam=None, L=None, bam_list=None,
         sys.exit("Use only 'H' or 'harmonic_indel_quality'")
     if D and read_dependence_factor:
         sys.exit("Use only 'D' or 'read_dependence_factor'")
-    program = create_program("freebayes", log)
+    program = pipeline.add_node("freebayes", log)
     program.add_arg(b, formats.Bam, "-b")
     program.add_arg(bam, formats.Bam, "--bam")
     program.add_arg(v, str, "-v")

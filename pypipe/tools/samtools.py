@@ -1,7 +1,7 @@
 import sys
 
 from pypipe import formats
-from pypipe.utils import create_program, install_program
+from pypipe.utils import *
 
 
 install_program("samtools.sh", "samtools")
@@ -10,7 +10,7 @@ install_program("samtools.sh", "samtools")
 def view(in_, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
          r=None, R=None, S=None, c=None, t=None, u=None, log=None,
          regions=None):
-    program = create_program("samtools view", log)
+    program = pipeline.add_node("samtools view", log)
     if S:
         program.add_arg(in_, formats.Sam)
     else:
@@ -39,7 +39,7 @@ def view(in_, o, b=None, f=None, F=None, h=None, H=None, l=None, q=None,
 def mpileup(in_, out, _6=None, A=None, B=None, b=None, C=None, d=None, E=None,
             f=None, l=None, q=None, Q=None, r=None, D=None, g=None, S=None,
             u=None, e=None, h=None, I=None, L=None, o=None, P=None, log=None):
-    program = create_program("samtools mpileup", log, out)
+    program = pipeline.add_node("samtools mpileup", log, out)
     program.add_args(in_, formats.Bam)
     program.add_arg(_6, bool, "-6")
     program.add_arg(A, bool, "-A")
@@ -70,14 +70,14 @@ def mpileup(in_, out, _6=None, A=None, B=None, b=None, C=None, d=None, E=None,
 
 
 def reheader(in_header, in_, log=None):
-    program = create_program("samtools reheader", log)
+    program = pipeline.add_node("samtools reheader", log)
     program.add_arg(in_header, formats.Sam)
     program.add_arg(in_, formats.Bam)
     return formats.Bam(in_.path, program)
 
 
 def cat(in_, o, h=None, log=None):
-    program = create_program("samtools cat", log)
+    program = pipeline.add_node("samtools cat", log)
     program.add_arg(h, formats.Sam, "-h")
     program.add_arg(o, str, "-o")
     program.add_args(in_, formats.Bam)
@@ -85,7 +85,7 @@ def cat(in_, o, h=None, log=None):
     
 
 def sort(in_, out, n=None, m=None, log=None):
-    program = create_program("samtools sort", log)
+    program = pipeline.add_node("samtools sort", log)
     program.add_arg(in_, formats.Bam)
     program.add_arg(out, str)
     program.add_arg(n, bool, "-n")
@@ -95,7 +95,7 @@ def sort(in_, out, n=None, m=None, log=None):
 
 def merge(in_, out, _1=None, f=None, h=None, n=None,
           R=None, r=None, u=None, log=None):
-    program = create_program("samtools merge", log)
+    program = pipeline.add_node("samtools merge", log)
     program.add_arg(out, str)
     program.add_args(in_, formats.Bam, 2)
     program.add_arg(_1, bool, "-1")
@@ -109,20 +109,20 @@ def merge(in_, out, _1=None, f=None, h=None, n=None,
 
 
 def index(in_, log=None):
-    program = create_program("samtools index", log)
+    program = pipeline.add_node("samtools index", log)
     program.add_arg(in_, formats.Bam)
     return formats.Bai(in_.path + ".bai", program)
 
 
 def faidx(in_, regions=None, log=None):
-    program = create_program("samtools faidx", log)
+    program = pipeline.add_node("samtools faidx", log)
     program.add_arg(in_, formats.Fasta)
     program.add_args(regions, str)
     return formats.Fai(in_.path + ".fai", program)
 
 
 def rmdup(in_, out, s=None, S=None, log=None):
-    program = create_program("samtools rmdup", log)
+    program = pipeline.add_node("samtools rmdup", log)
     program.add_arg(s, bool, "-s")
     program.add_arg(S, bool, "-S")
     program.add_arg(in_, formats.Bam)
@@ -132,7 +132,7 @@ def rmdup(in_, out, s=None, S=None, log=None):
 
 def calmd(in_, ref, out, A=None, e=None, u=None, b=None, S=None, C=None,
           r=None, E=None, log=None):
-    program = create_program("samtools calmd", log, out)
+    program = pipeline.add_node("samtools calmd", log, out)
     program.add_arg(A, bool, "-A")
     program.add_arg(e, bool, "-e")
     program.add_arg(u, bool, "-u")

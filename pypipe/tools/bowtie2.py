@@ -1,7 +1,7 @@
 import sys
 
 from pypipe import formats
-from pypipe.utils import create_program, install_program
+from pypipe.utils import *
 
 
 install_program("bowtie2.sh", "bowtie2")
@@ -52,7 +52,7 @@ def bowtie2(x, S, U=None, _1=None, _2=None, q=None, qseq=None, f=None,
     if t and time:
         sys.exit("bowtie2: use only 't' or 'time'")
 
-    program = create_program("bowtie2", log)
+    program = pipeline.add_node("bowtie2", log)
     program.add_arg(x, formats.Bowtie2Index, "-x")
     if U:
         if qseq:
