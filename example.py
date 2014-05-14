@@ -1,6 +1,8 @@
 from pypipe.tools import bwa, bowtie2, samtools, bcftools
 
 
+set_input_dir('~/input')
+
 # Input files
 ref = Fasta("GRCh37.fa")  # reference file
 bwa_i = BwaIndex("GRCh37.fa")  # all bwa index files

@@ -10,27 +10,25 @@ parser = argparse.ArgumentParser(
 parser.add_argument('pipeline', help='name of pipeline file',
         metavar="PIPELINE_FILE")
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('--draw', action='store_true',
-        help='draw pipeline to PNG')
-group.add_argument('--run', action='store', nargs=1,
-        metavar='NODE_NAME', help='run pipeline')
-group.add_argument('--reset', action='store', nargs=1,
-        metavar='NODE_NAME', help='reset pipeline from node')
+group.add_argument('--draw', action='store',
+        metavar='IMG_TYPE', help='draw pipeline to PNG')
+group.add_argument('--run', action='store', type=int,
+        metavar='NODE_NUMBER', help='run pipeline')
+group.add_argument('--reset', action='store', type=int,
+        metavar='NODE_NUMBER', help='reset pipeline from node')
 group.add_argument('--resetall', action='store_true',
         help='reset all pipeline nodes')
 _args = parser.parse_args()
 
 execfile(_args.pipeline)
+
+from pypipe.core import pipeline
 if _args.draw:
-    from pypipe.utils import generate_pipeline_graph
-    generate_pipeline_graph(_args.pipeline)
+    pipeline.draw(_args.pipeline, _args.draw)
 elif _args.run:
-    from pypipe.utils import *
-    pipeline.run(_args.pipeline, eval(_args.run[0]))
+    pipeline.run(_args.pipeline, _args.run - 1)
 elif _args.reset:
-    from pypipe.utils import reset_program
-    reset_program(_args.pipeline, eval(_args.reset[0]))
+    pipeline.reset(_args.pipeline, _args.reset - 1)
 elif _args.resetall:
-    from pypipe.utils import reset_pipeline
-    reset_pipeline(_args.pipeline)
+    pipeline.reset_all(_args.pipeline)
 

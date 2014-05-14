@@ -1,16 +1,25 @@
-import os.path
+import os
 import sys
+
+
+_INPUT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+
+def set_input_dir(path):
+    global _INPUT_DIR
+    _INPUT_DIR = os.path.expanduser(path)
 
 
 class _File(object):
 
     def __init__(self, path, program):
-        self.path = path
         self.program = program
         if not program:
+            self.path = os.path.join(_INPUT_DIR, path)
             self.check()
-        #else:
-        #    self.program.return_files.append(self)
+        else:
+            self.path = path
+            self.program.return_files.append(self)
 
     def check(self):
         if not os.path.isfile(self.path):
