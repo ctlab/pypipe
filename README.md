@@ -20,4 +20,4 @@ Writen in python2
 *   **How to write pipelines:** see example.py
 *   **How to add support of new tool:** see pypipe/tools/\* files
 *   **How to draw pipeline to img:** ./pypipe.py example.py --draw svg
-*   **How to run pipeline:** ./pypipe.py example.py --run vcf
+*   **How to run pipeline:** ./pypipe.py example.py --run 8
