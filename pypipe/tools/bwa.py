@@ -1,116 +1,194 @@
-import sys
-
-from pypipe import formats
-from pypipe.utils import *
+from pypipe.formats import *
+from pypipe.utils import install_program, tool
 
 
 install_program("bwa.sh", "bwa")
 
 
-def mem(ref, in1, out, in2=None, t=None, k=None, w=None, d=None, r=None,
-        c=None, P=None, B=None, O=None, E=None, L=None, U=None, p=None,
-        R=None, T=None, a=None, C=None, H=None, M=None, v=None, log=None):
-    program = pipeline.add_node("bwa mem", log, out)
-    program.add_arg(t, int, "-t")
-    program.add_arg(k, int, "-k")
-    program.add_arg(w, int, "-w")
-    program.add_arg(d, int, "-d")
-    program.add_arg(r, float, "-r")
-    program.add_arg(c, int, "-c")
-    program.add_arg(P, bool, "-P")
-    program.add_arg(a, int, "-a")
-    program.add_arg(B, int, "-B")
-    program.add_arg(O, int, "-O")
-    program.add_arg(E, int, "-E")
-    program.add_arg(L, int, "-L")
-    program.add_arg(U, int, "-U")
-    program.add_arg(p, bool, "-p")
-    program.add_arg(R, str, "-R")
-    program.add_arg(T, int, "-T")
-    program.add_arg(a, bool, "-a")
-    program.add_arg(C, bool, "-C")
-    program.add_arg(H, bool, "-H")
-    program.add_arg(M, bool, "-M")
-    program.add_arg(v, int, "-v")
-    program.add_arg(ref, formats.BwaIndex)
-    program.add_arg(in1, formats.Fastq)
-    program.add_arg(in2, formats.Fastq)
-    return formats.Sam(out, program)
+@tool
+def mem():
+    return {
+        'cmd': 'bwa mem',
+        'type': None,
+        'log': 'log',
+        'out': {
+            'redirect': True,
+            'return': [
+                {'arg': 'out', 'type': Sam, 'suffix': ''},
+            ],
+        },
+        'args': {
+            'named': {
+                '-t': int,
+                '-k': int,
+                '-w': int,
+                '-d': int,
+                '-r': float,
+                '-c': int,
+                '-P': bool,
+                '-a': int,
+                '-B': int,
+                '-O': int,
+                '-E': int,
+                '-L': int,
+                '-U': int,
+                '-p': bool,
+                '-R': str,
+                '-T': int,
+                '-a': bool,
+                '-C': bool,
+                '-H': bool,
+                '-M': bool,
+                '-v': int,
+            },
+            'unnamed': [
+                ('ref*', BwaIndex),
+                ('in1*', Fastq),
+                ('in2', Fastq),
+                ('out*', str),
+            ],
+        },
+    }
 
 
-def aln(ref, in_, out, n=None, o=None, e=None, d=None, i=None, l=None, k=None,
-        t=None, M=None, O=None, E=None, R=None, c=None, N=None,
-        q=None, I=None, B=None, b=None, _0=None, _1=None, _2=None, log=None):
-    program = pipeline.add_node("bwa aln", log, out)
-    program.add_arg(ref, formats.BwaIndex)
-    program.add_arg(in_, formats.Fastq)
-    program.add_arg(n, int, '-n')
-    program.add_arg(o, int, '-o')
-    program.add_arg(e, int, '-e')
-    program.add_arg(d, int, '-d')
-    program.add_arg(i, int, '-i')
-    program.add_arg(l, int, '-l')
-    program.add_arg(k, int, '-k')
-    program.add_arg(t, int, '-t')
-    program.add_arg(M, int, '-M')
-    program.add_arg(O, int, '-O')
-    program.add_arg(E, int, '-E')
-    program.add_arg(R, int, '-R')
-    program.add_arg(c, bool, '-c')
-    program.add_arg(N, bool, '-N')
-    program.add_arg(q, int, '-q')
-    program.add_arg(I, bool, '-I')
-    program.add_arg(B, int, '-B')
-    program.add_arg(b, bool, '-b')
-    program.add_arg(_0, bool, '-0')
-    program.add_arg(_1, bool, '-1')
-    program.add_arg(_2, bool, '-2')
-    return formats.Sai(out, program)
+
+@tool
+def aln():
+    return {
+        'cmd': 'bwa aln',
+        'type': None,
+        'log': 'log',
+        'out': {
+            'redirect': True,
+            'return': [
+                {'arg': 'out', 'type': Sai, 'suffix': ''},
+            ],
+        },
+        'args': {
+            'named': {
+                '-n': int,
+                '-o': int,
+                '-e': int,
+                '-d': int,
+                '-i': int,
+                '-l': int,
+                '-k': int,
+                '-t': int,
+                '-M': int,
+                '-O': int,
+                '-E': int,
+                '-R': int,
+                '-c': bool,
+                '-N': bool,
+                '-q': int,
+                '-I': bool,
+                '-B': int,
+                '-b': bool,
+                '-0': bool,
+                '-1': bool,
+                '-2': bool,
+            },
+            'unnamed': [
+                ('ref*', BwaIndex),
+                ('in_*', Fastq),
+                ('out*', str),
+            ],
+        },
+    }
 
 
-def samse(ref, sai, in_, out, n=None, r=None, log=None):
-    program = pipeline.add_node("bwa samse", log, out)
-    program.add_arg(ref, formats.BwaIndex)
-    program.add_arg(sai, formats.Sai)
-    program.add_arg(in_, formats.Fastq)
-    program.add_arg(n, int, "-n")
-    program.add_arg(r, str, "-r")
-    return formats.Sam(out, program)
+@tool
+def samse():
+    return {
+        'cmd': 'bwa samse',
+        'type': None,
+        'log': 'log',
+        'out': {
+            'redirect': True,
+            'return': [
+                {'arg': 'out', 'type': Sam, 'suffix': ''},
+            ],
+        },
+        'args': {
+            'named': {
+                '-n': int,
+                '-r': str,
+            },
+            'unnamed': [
+                ('ref*', BwaIndex),
+                ('sai*', Sai),
+                ('in_*', Fastq),
+                ('out*', str),
+            ],
+        },
+    }
 
 
-def sampe(ref, sai1, sai2, in1, in2, out, a=None, o=None,
-          P=None, n=None, N=None, r=None, log=None):
-    program = pipeline.add_node("bwa sampe", log, out)
-    program.add_arg(ref, formats.BwaIndex)
-    program.add_arg(sai1, formats.Sai)
-    program.add_arg(sai2, formats.Sai)
-    program.add_arg(in1, formats.Fastq)
-    program.add_arg(in2, formats.Fastq)
-    program.add_arg(a, int, '-a')
-    program.add_arg(o, int, '-o')
-    program.add_arg(P, bool, '-P')
-    program.add_arg(n, int, '-n')
-    program.add_arg(N, int, '-N')
-    program.add_arg(r, str, '-r')
-    return formats.Sam(out, program)
+@tool
+def sampe():
+    return {
+        'cmd': 'bwa sampe',
+        'type': None,
+        'log': 'log',
+        'out': {
+            'redirect': True,
+            'return': [
+                {'arg': 'out', 'type': Sam, 'suffix': ''},
+            ],
+        },
+        'args': {
+            'named': {
+                '-a': int,
+                '-o': int,
+                '-P': bool,
+                '-n': int,
+                '-N': int,
+                '-r': str,
+            },
+            'unnamed': [
+                ('ref*', BwaIndex),
+                ('sai1*', Sai),
+                ('sai2*', Sai),
+                ('in1*', Fastq),
+                ('in2*', Fastq),
+                ('out*', str),
+            ],
+        },
+    }
 
 
-def bwasw(ref, in1, out, in2=None, a=None, b=None, q=None, r=None, t=None,
-          w=None, T=None, c=None, z=None, s=None, N=None, log=None):
-    program = pipeline.add_node("bwa bwasw", log, out)
-    program.add_arg(ref, formats.BwaIndex)
-    program.add_arg(in1, formats.Fastq)
-    program.add_arg(in2, formats.Fastq)
-    program.add_arg(a, int, '-a')
-    program.add_arg(b, int, '-b')
-    program.add_arg(q, int, '-q')
-    program.add_arg(r, int, '-r')
-    program.add_arg(t, int, '-t')
-    program.add_arg(w, int, '-w')
-    program.add_arg(T, int, '-T')
-    program.add_arg(c, float, '-c')
-    program.add_arg(z, int, '-z')
-    program.add_arg(s, int, '-s')
-    program.add_arg(N, int, '-N')
-    return formats.Sam(out, program)
+@tool
+def bwasw():
+    return {
+        'cmd': 'bwa bwasw',
+        'type': None,
+        'log': 'log',
+        'out': {
+            'redirect': True,
+            'return': [
+                {'arg': 'out', 'type': Sam, 'suffix': ''},
+            ]
+        },
+        'args': {
+            'named': {
+                '-a': int,
+                '-b': int,
+                '-q': int,
+                '-r': int,
+                '-t': int,
+                '-w': int,
+                '-T': int,
+                '-c': float,
+                '-z': int,
+                '-s': int,
+                '-N': int,
+            },
+            'unnamed': [
+                ('ref*', BwaIndex),
+                ('in1*', Fastq),
+                ('in2', Fastq),
+                ('out*', str),
+            ],
+        },
+    }
 

@@ -1,36 +1,9 @@
 import os
 import subprocess
 import sys
-import threading
-import tempfile
-import time
 
-from pypipe import formats
+from pypipe.core import pipeline
 from pypipe.paths import PYPIPE_DIR, INSTALL_DIR
-
-
-_running = []
-
-
-def add_arg_error_msg(name, type_, option=None):
-    option = option and ('"' + option + '"') or 'argument'
-    if issubclass(type_, formats._File):
-        t = type_.__name__.upper() + ' file'
-    else:
-        t = type_ + ' value'
-    return '%s: %s must be %s' % (name, option, t)
-
-
-def add_args_error_msg(name, type_, options=None):
-    if option:
-        msg = ': "%s" must be ' % option
-    else:
-        msg = ': expected list of '
-    if issubclass(type_, formats._File):
-        t = type_.__name__.upper() + ' file'
-    else:
-        t = type_ + ' value'
-    return name + msg + t
 
 
 def _program_exists(program_name):
@@ -44,7 +17,7 @@ def _program_exists(program_name):
 
 
 def install_program(script_name, program_name):
-    if not program_exists(program_name):
+    if not _program_exists(program_name):
         print program_name, 'is not installed. Installing...'
         install_script = os.path.join(INSTALL_DIR, 'install.sh')
         program_script = os.path.join(INSTALL_DIR, script_name)
@@ -52,153 +25,112 @@ def install_program(script_name, program_name):
         print program_name, 'installed.'
 
 
-class Pipeline:
-
-    def __init__(self):
-        self.to_run = set()
-        self.running = []
-        self.all_programs = []
-        self.input_files = []
-
-    def generate_to_run(self, node):
-        self.to_run.add(node)
-        for parent in node._parents
-            self.generate_to_run(parent)
-
-    def remove_children_from_to_run(self, node):
-        for child in node.children:
-            self.to_run.remove(child)
-            self.remove_children_from_to_run(child)
-
-    def add_node(self, name, log=None, out=None):
-        if type_ == 'jar':
-            name = _join_pypipe_path(name, 2)
-        program = _PipelineNode(name, log, out)
-        self.all_programs.append(program)
-        return program
-
-    def add_edge(self, p, f):
-        if f.program:
-            p.parents.add(f.program)
-            if p not in f.program.children:
-                f.program.children.add(p)
-                #f.program.labels...
-                p.count += 1
-            else:
-                #labels...
-        else:
-            self.input_files.append(f)
-            f.next_program = p
-
-    def run(name, node):
-        while len(self.to_run) > 0 or len(self.running) > 0:
-            for program in self.to_run:
-                if program.count == 0:
-                    program.run()
-            for program in self.running:
-                try:
-                    self.to_run.remove(program)
-                except KeyError:
-                    pass
-            running = [program for program in self.running]
-            for program in running:
-                if not program.thread.is_alive():
-                    self.running.remove(program)
-                    for child in program:
-                        child.count -= 1
-                    if program.ret != 0:
-                        self.remove_children_from_to_run(program)
-            time.sleep(1)
+def _handle_type(t, kwargs):
+    if type(t) == dict:
+        ok = False
+        for k in t:
+            kk = k.replace('-', '_')
+            if kk in kwargs and kwargs[kk]:
+                ok = True
+                type_ = t[k]
+        if not ok:
+            type_ = t['']
+    else:
+        type_ = t
+    return type_
 
 
-pipeline = Pipeline()
+def _handle_arg(cmd, o, t, kwargs, option_none=False):
+    option = o.replace('*', '')
+    key = option.replace('-', '_')
+    type_ = _handle_type(t, kwargs)
+    mandatory = (o[-1] == '*') and True or False
+    value = (key in kwargs) and kwargs[key] or None
+    if mandatory and value is None:
+        sys.exit('%s: %s is a mandatory argument' % (cmd, key))
+    if option_none:
+        option = None
+    return {
+        'option': option,
+        'type': type_,
+        'key': key,
+        'value': value,
+    }
 
 
-class PipelineNode:
+def _handle_return(ret, kwargs):
+    result = []
+    for r in ret:
+        key = r['arg'].replace('-', '_')
+        name = kwargs[key] + r['suffix']
+        type_ = _handle_type(r['type'], kwargs)
+        if type_ != None:
+            result.append({
+                'key': key,
+                'name': name,
+                'type': type_,
+            })
+    return result
 
-    def __init__(self, name, log=None, out=None):
+
+def tool(config):
+    def wrapper(**kwargs):
+        conf = config()
+        cmd = conf['cmd']
+        type_ = conf['type']
+
+        log_k = conf['log']
+        log = log_k in kwargs and kwargs[log_k] or None
         if log and type(log) != str:
-            sys.exit(name + ': "log" must be a string')
-        if out and type(out) != str:
-            sys.exit(name + ': "out" must be a string')
-        self.name = name
-        self.log = log or os.devnull
-        self.out = out or self.log
-        self.cmd = name.split(' ')
-        self.children = set()
-        self.parents = set()
-        self.count = 0
-        #self.labels = {}
-        #self.return_files = []
-        self.thread = threading.Thread(target=self.thread_function, args=())
+            sys.exit('%s: log argument "%s" must be a string' % (cmd, log_k))
 
-    def thread_function(self):
-        self.log = open(self.log, 'w')
-        self.out = open(self.out, 'w')
-        msg = ' '.join(self._cmd) + (self._out.name !=
-                self.log.name and (' > ' + self.out.name) or '')
-        try:
-            self.ret = \
-                subprocess.call(self.cmd, stdout=self.out, stderr=self.log)
-        except OSError:
-            self.cmd[0] = os.path.join(PYPIPE_DIR, self.cmd[0])
-            self.ret = \
-                subprocess.call(self.cmd, stdout=self.out, stderr=self.log)
-        self.out.close()
-        self.log.close()
-        if self.ret == 0:
-            sys.stderr.write('"%s" complete\n' % msg)
+        return_info = _handle_return(conf['out']['return'], kwargs)
+        out_keys = []
+        if conf['out']['redirect']:
+            out = return_info[0]['name']
+            for r in return_info:
+                out_keys.append(r['key'])
         else:
-            sys.stderr.write('"%s" failed\n' % msg)
+            out = None
 
-    def run(self):
-        pipeline.running.append(self)
-        self.thread.start()
+        args = []
+        named_args = conf['args']['named']
+        for k in named_args:
+            arg = _handle_arg(cmd, k, named_args[k], kwargs)
+            args.append(arg)
+        unnamed_args = conf['args']['unnamed']
+        for o, t in unnamed_args:
+            arg = _handle_arg(cmd, o, t, kwargs, option_none=True)
+            args.append(arg)
 
-    def add_arg(self, value, type_, option=None):
-        if value is None or value == False:
-            return
-        if type(value) == int and type_ == float:
-            value = float(value)
-        if type(value) != type_:
-            error_msg = add_arg_error_msg(self.name, type_, option)
-            sys.exit(error_msg)
-        if option:
-            self.cmd.append(option)
-        if isinstance(value, formats._File):
-            self.cmd.append(value.path)
-            pipeline.add_edge(self, value)
-        elif type(value) != bool:
-            self.cmd.append(str(value))
+        allowable_keys = set([a['key'] for a in args])
+        allowable_keys.add(log_k)
+        for k in kwargs:
+            if k not in allowable_keys:
+                sys.exit('%s: unexpected key "%s"' % (cmd, k))
+        
+        program = pipeline.add_node(cmd, log, out, type_)
+        for arg in args:
+            if arg['key'] in out_keys:
+                continue
+            if type(arg['type']) == list:
+                type_ = arg['type'][0]
+                min_len = arg['type'][1]
+                delim = arg['type'][2]
+                value = arg['value']
+                option = arg['option']
+                program.add_args(value, type_, min_len, delim, option)
+            else:
+                program.add_arg(arg['value'], arg['type'], arg['option'])
 
-    def add_args(self, value, type_, min_len=1, delim=' ', option=None):
-        if value is None:
-            return
-        if type(value) != list and type(value) != tuple:
-            error_msg = add_args_error_msg(self.name, type_, option)
-            sys.exit(error_msg)
-        if len(value) < min_len:
-            error_msg = '%s: list length must be >= %d' % (self.name, min_len)
-        if not option:
-            for v in value:
-                self.add_arg(v, type_)
-        else:
-            for v in value:
-                if type(v) == int and type_ == float:
-                    v = float(v)
-                if type(v) != type_:
-                    error_msg = add_args_error_msg(self.name, type_, option)
-                    sys.exit(error_msg)
-                if isinstance(v, formats._File):
-                    pipeline.add_edge(self, v)
-            if issubclass(type_, formats._File):
-                value = [v.path for v in value]
-            self.add_arg(delim.join(map(str, value)), str, option)
+        return_values = []
+        for r in return_info:
+            name = r['name']
+            init = r['type']
+            return_values.append(init(name, program))
+        if len(return_values) == 1:
+            return return_values[0]
+        return return_values
 
-
-
-
-
-
-
+    return wrapper
 

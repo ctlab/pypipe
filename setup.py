@@ -13,7 +13,7 @@ distutils.dir_util.copy_tree(INSTALL_DIR_NAME, INSTALL_DIR)
 
 setup(
     name='pypipe',
-    version='0.2',
+    version='0.3',
     description='Bioinformatics pipeline framework',
     author='semkagtn',
     author_email='semkagtn@gmail.com',

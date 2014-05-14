@@ -9,8 +9,8 @@ class _File(object):
         self.program = program
         if not program:
             self.check()
-        else:
-            self.program.return_files.append(self)
+        #else:
+        #    self.program.return_files.append(self)
 
     def check(self):
         if not os.path.isfile(self.path):
@@ -126,7 +126,8 @@ class Bowtie2Index(_File):
 
     def check(self):
         suff = [".1", ".2", ".3", ".4", ".rev.1", ".rev.2"]
-        _check_files_group(suff)
+        suff = map(lambda x: x + '.bt2', suff)
+        self._check_files_group(suff)
 
 
 class BwaIndex(_File):
@@ -136,5 +137,5 @@ class BwaIndex(_File):
 
     def check(self):
         suff = [".amb", ".ann", ".bwt", ".pac", ".sa"]
-        _check_files_group(suff)
+        self._check_files_group(suff)
 
