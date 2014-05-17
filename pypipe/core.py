@@ -120,7 +120,7 @@ class Pipeline:
                 p.input_files[f.program] = [f]
         else:
             self.input_files.append(f)
-            f.next_program = p
+            f.next_programs.append(p)
 
     def reset(self, name, i):
         db = Database(name)
@@ -162,7 +162,8 @@ class Pipeline:
             p.graph_number = i
             i += 1
         for f in self.input_files:
-            graph += '\t%d -> %d;\n' % (f.number, f.next_program.number)
+            for p in f.next_programs:
+                graph += '\t%d -> %d;\n' % (f.number, p.number)
         for p in self.all_programs:
             if len(p.children) > 0:
                 for c in p.children:

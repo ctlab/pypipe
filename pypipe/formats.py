@@ -14,6 +14,7 @@ class _File(object):
 
     def __init__(self, path, program):
         self.program = program
+        self.next_programs = []
         if not program:
             self.path = os.path.join(_INPUT_DIR, path)
             self.check()
