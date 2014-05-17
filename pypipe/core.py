@@ -3,6 +3,7 @@ import subprocess
 import sys
 import threading
 import time
+import ntpath
 import sqlite3
 
 from pypipe import formats
@@ -139,7 +140,8 @@ class Pipeline:
         graph = 'digraph {\n'
         i = 0
         for f in self.input_files:
-            label = '%s\\n(%s)' % (f.path, f.__class__.__name__)
+            label = '%s\\n(%s)' % \
+                (ntpath.basename(f.path), f.__class__.__name__)
             graph += '\t%d [label="%s" shape=rect];\n' % (i, label)
             f.number = i
             i += 1
