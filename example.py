@@ -1,7 +1,7 @@
 from pypipe.tools import bwa, bowtie2, samtools, bcftools
 
 
-set_input_dir('~/pypipe/input')
+set_input_dir('input')
 
 # Input files
 ref = Fasta("GRCh37.fa")  # reference file

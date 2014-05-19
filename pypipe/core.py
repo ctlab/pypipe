@@ -165,13 +165,13 @@ class Pipeline:
             i += 1
         for f in self.input_files:
             for p in f.next_programs:
-                graph += '\t%d -> %d;\n' % (f.number, p.number)
+                graph += '\t%d -> %d;\n' % (f.number, p.graph_number)
         for p in self.all_programs:
             if len(p.children) > 0:
                 for c in p.children:
                     label = ','.join([f.path for f in c.input_files[p]])
                     graph += '\t%d -> %d [label="%s"];\n' % \
-                            (p.number, c.number, label)
+                            (p.graph_number, c.graph_number, label)
             else:
                 for f in p.return_files:
                     label = '%s\\n(%s)' % (f.path, f.__class__.__name__)
