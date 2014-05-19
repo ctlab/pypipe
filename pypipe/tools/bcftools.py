@@ -72,7 +72,4 @@ def cat(in_, out, log=None):
             },
         }
     }
-    program = pipeline.add_node("bcftools cat", log, out)
-    program.add_args(in_, formats.Bcf)
-    return formats.Bcf(out, program)
 
