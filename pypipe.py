@@ -11,7 +11,7 @@ parser.add_argument('pipeline', help='name of pipeline file',
         metavar="PIPELINE_FILE")
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('--draw', action='store',
-        metavar='IMG_TYPE', help='draw pipeline to PNG')
+        metavar='IMG_TYPE', help='draw pipeline to image file')
 group.add_argument('--run', action='store', type=int,
         metavar='NODE_NUMBER', help='run pipeline')
 group.add_argument('--reset', action='store', type=int,
