@@ -1,9 +1,8 @@
-import os
 import subprocess
-import sys
 
-from pypipe.core import pipeline
-from pypipe.paths import PYPIPE_DIR, INSTALL_DIR
+from pypipe.core import pipeline 
+from pypipe.paths import PYPIPE_DIR, INSTALL_SCRIPTS_DIR
+from pypipe.formats import *
 
 
 def _program_exists(program_name):
@@ -19,8 +18,9 @@ def _program_exists(program_name):
 def install_program(script_name, program_name):
     if not _program_exists(program_name):
         print program_name, 'is not installed. Installing...'
-        install_script = os.path.join(INSTALL_DIR, 'install.sh')
-        program_script = os.path.join(INSTALL_DIR, script_name)
+        install_scripts_path = os.path.join(os.getcwd(), INSTALL_SCRIPTS_DIR)
+        install_script = os.path.join(install_scripts_path, 'install.sh')
+        program_script = os.path.join(install_scripts_path, script_name)
         subprocess.call(['sh', install_script, program_script])
         print program_name, 'installed.'
 
@@ -84,15 +84,6 @@ def tool(config):
         if log and type(log) != str:
             sys.exit('%s: log argument "%s" must be a string' % (cmd, log_k))
 
-        return_info = _handle_return(conf['out']['return'], kwargs)
-        out_keys = []
-        if conf['out']['redirect']:
-            out = return_info[0]['name']
-            for r in return_info:
-                out_keys.append(r['key'])
-        else:
-            out = None
-
         args = []
         named_args = conf['args']['named']
         for k in named_args:
@@ -102,6 +93,16 @@ def tool(config):
         for o, t in unnamed_args:
             arg = _handle_arg(cmd, o, t, kwargs, option_none=True)
             args.append(arg)
+
+        return_info = _handle_return(conf['out']['return'], kwargs)
+        out_keys = []
+        if conf['out']['redirect']:
+            out = return_info[0]['name']
+            for r in return_info:
+                out_keys.append(r['key'])
+        else:
+            out = None
+
 
         allowable_keys = set([a['key'] for a in args])
         allowable_keys.add(log_k)
@@ -127,7 +128,9 @@ def tool(config):
         for r in return_info:
             name = r['name']
             init = r['type']
-            return_values.append(init(name, program))
+            file_ = init(name, program)
+            return_values.append(file_)
+            pipeline.add_file(file_)
         if len(return_values) == 1:
             return return_values[0]
         return return_values

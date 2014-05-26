@@ -1,8 +1,7 @@
+from pypipe.formats import *
 from pypipe.tools import bwa, bowtie2, samtools, bcftools
 
-set_input_dir('input')
-
-ref = Fasta("GRCh37.fa")  
+ref = Fasta("GRCh37.fa")
 bwa_i = BwaIndex("GRCh37.fa") 
 i = Bowtie2Index("GRCh37")
 r1 = Fastq("IonXpress_021.fastq")
@@ -18,4 +17,3 @@ s_bam2 = samtools.sort(in_=bam2, out="sorted2")
 
 bcf = samtools.mpileup(in_=[s_bam1, s_bam2], out="out.bcf", _u=True, _f=ref)
 vcf = bcftools.view(in_=bcf, out="out.vcf")
-

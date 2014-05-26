@@ -2,33 +2,43 @@
 
 import argparse
 
-from pypipe.formats import *
-
 
 parser = argparse.ArgumentParser(
         description="Bioinformatics pipelines framework")
-parser.add_argument('pipeline', help='name of pipeline file',
-        metavar="PIPELINE_FILE")
+parser.add_argument('database', help='name of pipeline db',
+        metavar="PIPELINE_DB_NAME")
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('--draw', action='store',
-        metavar='IMG_TYPE', help='draw pipeline to image file')
+group.add_argument('--save', action='store',
+        metavar='SCRIPT_NAME', help='save pipeline to db')
 group.add_argument('--run', action='store', type=int,
         metavar='NODE_NUMBER', help='run pipeline')
 group.add_argument('--reset', action='store', type=int,
         metavar='NODE_NUMBER', help='reset pipeline from node')
 group.add_argument('--resetall', action='store_true',
         help='reset all pipeline nodes')
+group.add_argument('--draw', action='store',
+        metavar='IMG_NAME', help='draw pipeline to svg file')
 _args = parser.parse_args()
 
-execfile(_args.pipeline)
 
 from pypipe.core import pipeline
-if _args.draw:
-    pipeline.draw(_args.pipeline, _args.draw)
+from pypipe.formats import *
+if _args.save:
+    execfile(_args.save)
+    pipeline.save(_args.database)
 elif _args.run:
-    pipeline.run(_args.pipeline, _args.run - 1)
+    pipeline.load(_args.database)
+    pipeline.run(_args.run - 1)
+    pipeline.save(_args.database)
 elif _args.reset:
-    pipeline.reset(_args.pipeline, _args.reset - 1)
+    pipeline.load(_args.database)
+    pipeline.reset(_args.reset - 1)
+    pipeline.save(_args.database)
 elif _args.resetall:
-    pipeline.reset_all(_args.pipeline)
+    pipeline.load(_args.database)
+    pipeline.reset_all()
+    pipeline.save(_args.database)
+elif _args.draw:
+    pipeline.load(_args.database)
+    pipeline.draw(_args.draw)
 

@@ -1,17 +1,31 @@
 #!/usr/bin/env python2
 
-import distutils
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
-from pypipe.paths import INSTALL_DIR, INSTALL_DIR_NAME
+from pypipe.paths import PYPIPE_DIR, INSTALL_SCRIPTS_DIR
+from pypipe.utils import install_program
 
 
 try:
-    os.mkdirs(INSTALL_DIR)
-except AttributeError:
+    os.makedirs(PYPIPE_DIR)
+except OSError:
     pass
-distutils.dir_util.copy_tree(INSTALL_DIR_NAME, INSTALL_DIR)
+
+#  binary file name -> install script name
+tools = {
+    'bcftools':    'bcftools.sh',
+    'bowtie2':     'bowtie2.sh',
+    'bwa':         'bwa.sh',
+    'freebayes':   'freebayes.sh',
+    'samtools':    'samtools.sh',
+    'VarScan.jar': 'varscan.sh',
+}
+
+for name in tools:
+    script = tools[name]
+    install_program(script, name)
+
 
 setup(
     name='pypipe',
@@ -19,6 +33,5 @@ setup(
     description='Bioinformatics pipeline framework',
     author='semkagtn',
     author_email='semkagtn@gmail.com',
-    packages=['pypipe', 'pypipe.tools'],
+    packages=find_packages(),
 )
-

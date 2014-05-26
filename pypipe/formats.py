@@ -1,151 +1,111 @@
-import os
-import sys
+import abstractfile
 
 
-_INPUT_DIR = os.path.dirname(os.path.realpath(__file__))
+class TextFile(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(TextFile, self).__init__(path, program, check)
 
 
-def set_input_dir(path):
-    global _INPUT_DIR
-    _INPUT_DIR = os.path.expanduser(path)
+class Fastq(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Fastq, self).__init__(path, program, check)
 
 
-class _File(object):
+class Fasta(abstractfile.File):
 
-    def __init__(self, path, program):
-        self.program = program
-        self.next_programs = []
-        if not program:
-            self.path = os.path.join(_INPUT_DIR, path)
-            self.check()
-        else:
-            self.path = path
-            self.program.return_files.append(self)
-
-    def check(self):
-        if not os.path.isfile(self.path):
-            sys.exit("File " + self.path + " doesn't exist")
-
-    def _check_files_group(self, suff):
-        files = [self.path + s for s in suff]
-        for f in files:
-            if not os.path.isfile(f):
-                sys.exit("File " + f + " doesn't exist")
+    def __init__(self, path, program=None, check=True):
+        super(Fasta, self).__init__(path, program, check)
 
 
-class TextFile(_File):
+class Bam(abstractfile.File):
 
-    def __init__(self, path, program=None):
-        super(TextFile, self).__init__(path, program)
-
-
-class Fastq(_File):
-    
-    def __init__(self, path, program=None):
-        super(Fastq, self).__init__(path, program)
+    def __init__(self, path, program=None, check=True):
+        super(Bam, self).__init__(path, program, check)
 
 
-class Fasta(_File):
-    
-    def __init__(self, path, program=None):
-        super(Fasta, self).__init__(path, program)
+class Sam(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Sam, self).__init__(path, program, check)
 
 
-class Bam(_File):
-    
-    def __init__(self, path, program=None):
-        super(Bam, self).__init__(path, program)
+class Bai(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Bai, self).__init__(path, program, check)
 
 
-class Sam(_File):
-    
-    def __init__(self, path, program=None):
-        super(Sam, self).__init__(path, program)
+class Sai(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Sai, self).__init__(path, program, check)
 
 
-class Bai(_File):
-    
-    def __init__(self, path, program=None):
-        super(Bai, self).__init__(path, program)
+class Fai(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Fai, self).__init__(path, program, check)
 
 
-class Sai(_File):
-    
-    def __init__(self, path, program=None):
-        super(Sai, self).__init__(path, program)
+class Bcf(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Bcf, self).__init__(path, program, check)
 
 
-class Fai(_File):
-    
-    def __init__(self, path, program=None):
-        super(Fai, self).__init__(path, program)
+class Vcf(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Vcf, self).__init__(path, program, check)
 
 
-class Bcf(_File):
-    
-    def __init__(self, path, program=None):
-        super(Bcf, self).__init__(path, program)
+class Bed(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Bed, self).__init__(path, program, check)
 
 
-class Vcf(_File):
-    
-    def __init__(self, path, program=None):
-        super(Vcf, self).__init__(path, program)
+class Qseq(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Qseq, self).__init__(path, program, check)
 
 
-class Bed(_File):
-    
-    def __init__(self, path, program=None):
-        super(Bed, self).__init__(path, program)
+class Snp(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Snp, self).__init__(path, program, check)
 
 
-class Qseq(_File):
-    
-    def __init__(self, path, program=None):
-        super(Qseq, self).__init__(path, program)
+class Pileup(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Pileup, self).__init__(path, program, check)
 
 
-class Snp(_File):
-    
-    def __init__(self, path, program=None):
-        super(Snp, self).__init__(path, program)
+class Indel(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Indel, self).__init__(path, program, check)
 
 
-class Pileup(_File):
-   
-    def __init__(self, path, program=None):
-        super(Pileup, self).__init__(path, program)
+class Cns(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Cns, self).__init__(path, program, check)
 
 
-class Indel(_File):
-   
-    def __init__(self, path, program=None):
-        super(Indel, self).__init__(path, program)
+class Bowtie2Index(abstractfile.File):
+
+    def __init__(self, path, program=None, check=True):
+        super(Bowtie2Index, self).__init__(path, program, check,
+            suff=['.1.bt2', '.2.bt2', '.3.bt2', '.4.bt2', '.rev.1.bt2', '.rev.2.bt2'])
 
 
-class Cns(_File):
-   
-    def __init__(self, path, program=None):
-        super(Cns, self).__init__(path, program)
+class BwaIndex(abstractfile.File):
 
-
-class Bowtie2Index(_File):
-
-    def __init__(self, path, program=None):
-        super(Bowtie2Index, self).__init__(path, program)
-
-    def check(self):
-        suff = [".1", ".2", ".3", ".4", ".rev.1", ".rev.2"]
-        suff = map(lambda x: x + '.bt2', suff)
-        self._check_files_group(suff)
-
-
-class BwaIndex(_File):
-
-    def __init__(self, path, program=None):
-        super(BwaIndex, self).__init__(path, program)
-
-    def check(self):
-        suff = [".amb", ".ann", ".bwt", ".pac", ".sa"]
-        self._check_files_group(suff)
-
+    def __init__(self, path, program=None, check=True):
+        super(BwaIndex, self).__init__(path, program, check,
+            suff=['.amb', '.ann', '.bwt', '.pac', '.sa'])
