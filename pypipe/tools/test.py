@@ -1,5 +1,5 @@
-from pypipe.utils import tool
 from pypipe.tools.toolsconfig import Test
+from pypipe.utils import tool
 
 
 @tool

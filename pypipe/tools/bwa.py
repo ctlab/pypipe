@@ -1,5 +1,8 @@
 from pypipe.tools.toolsconfig import Bwa
-from pypipe.utils import tool
+from pypipe.utils import tool, check_if_program_exists
+
+
+check_if_program_exists('bwa')
 
 
 @tool

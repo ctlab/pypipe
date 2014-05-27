@@ -1,5 +1,8 @@
 from pypipe.tools.toolsconfig import Bcftools
-from pypipe.utils import install_program, tool
+from pypipe.utils import tool, check_if_program_exists
+
+
+check_if_program_exists('bcftools')
 
 
 @tool

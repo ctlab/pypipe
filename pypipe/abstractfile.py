@@ -42,3 +42,4 @@ class File(object):
         for c in self.next_programs:
             child = c.number
             db.execute('insert into files_programs (parent, child) values (%d, %d)' % (file_, child))
+

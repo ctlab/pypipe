@@ -3,8 +3,6 @@ from pypipe import formats
 
 class Bcftools:
 
-    module = 'bcftools.py'
-
     @staticmethod
     def view():
         return {
@@ -75,8 +73,6 @@ class Bcftools:
 
 
 class Bowtie2:
-
-    module = 'bowtie2.py'
 
     @staticmethod
     def bowtie2():
@@ -206,8 +202,6 @@ class Bowtie2:
 
 
 class Bwa:
-
-    module = 'bwa.py'
 
     @staticmethod
     def mem():
@@ -392,8 +386,6 @@ class Bwa:
 
 class Freebayes:
 
-    module = 'freebayes.py'
-
     @staticmethod
     def freebayes():
         return {
@@ -482,8 +474,6 @@ class Freebayes:
         }
 
 class Samtools:
-
-    module = 'samtools.py'
 
     @staticmethod
     def view():
@@ -694,8 +684,6 @@ class Samtools:
         }
 
 class Varscan:
-
-    module = 'varscan.py'
 
     @staticmethod
     def pileup2snp():

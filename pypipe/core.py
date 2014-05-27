@@ -209,6 +209,7 @@ class Pipeline:
             running = [program for program in self.running]
             for program in running:
                 if not program.thread.is_alive():
+                    #self.draw('img.svg')  # debug
                     self.running.remove(program)
                     for child in program.children:
                         child.count -= 1

@@ -1,3 +1,4 @@
+import sys
 import subprocess
 
 from pypipe.core import pipeline 
@@ -5,7 +6,12 @@ from pypipe.paths import PYPIPE_DIR, INSTALL_SCRIPTS_DIR
 from pypipe.formats import *
 
 
-def _program_exists(program_name):
+def check_if_program_exists(program_name):
+    if not_program_exists(program_name):
+        sys.exit('%s is not installed. Error' % program_name)
+
+
+def program_exists(program_name):
     paths = os.environ['PATH'].split(':')
     paths.append(PYPIPE_DIR)
     for path in paths:
@@ -16,7 +22,7 @@ def _program_exists(program_name):
 
 
 def install_program(script_name, program_name):
-    if not _program_exists(program_name):
+    if not program_exists(program_name):
         print program_name, 'is not installed. Installing...'
         install_scripts_path = os.path.join(os.getcwd(), INSTALL_SCRIPTS_DIR)
         install_script = os.path.join(install_scripts_path, 'install.sh')
