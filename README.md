@@ -2,12 +2,15 @@ pypipe
 ======
 
 Bioinformatics pipelines framework,
-Writen in python2
+writen in [python2](https://www.python.org/).
 
 ### Requirements
+## For core
 *   [python2](http://www.python.org/)
 *   [setuptools](https://pythonhosted.org/setuptools/)
 *   [graphviz](http://www.graphviz.org/)
+## For GUI
+*   [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/intro)
 
 ### Instalation
     $ git clone https://github.com/semkagtn/pypipe.git

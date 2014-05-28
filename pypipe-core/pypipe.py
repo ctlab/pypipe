@@ -23,8 +23,8 @@ group.add_argument('--renamefile', action='store', nargs=2,
 _args = parser.parse_args()
 
 from pypipe.core import pipeline
-from pypipe.formats import *
 if _args.save:
+    from pypipe.formats import *
     execfile(_args.save)
     pipeline.save(_args.database)
 elif _args.run:
