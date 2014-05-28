@@ -1,14 +1,42 @@
-import sys
 import subprocess
 
 from pypipe.core import pipeline 
 from pypipe.paths import PYPIPE_DIR, INSTALL_SCRIPTS_DIR
 from pypipe.formats import *
+import pypipe.baseexception
+
+
+class ProgramIsNotInstalledError(pypipe.baseexception.BaseException):
+
+    def __init__(self, program_name):
+        value = '%s is not installed. Error' % program_name
+        super(ProgramIsNotInstalledError, self).__init__(value)
+
+
+class MandatoryArgumentError(pypipe.baseexception.BaseException):
+
+    def __init__(self, cmd, key):
+        value = '%s: %s is a mandatory argument' % (cmd, key)
+        super(MandatoryArgumentError, self).__init__(value)
+
+
+class LogArgumentNotStrError(pypipe.baseexception.BaseException):
+
+    def __init__(self, cmd, log_k):
+        value = '%s: log argument "%s" must be a string' % (cmd, log_k)
+        super(LogArgumentNotStrError, self).__init__(value)
+
+
+class UnexpectedKeyError(pypipe.baseexception.BaseException):
+
+    def __init__(self, cmd, k):
+        value = '%s: unexpected key "%s"' % (cmd, k)
+        super(UnexpectedKeyError, self).__init__(value)
 
 
 def check_if_program_exists(program_name):
-    if not_program_exists(program_name):
-        sys.exit('%s is not installed. Error' % program_name)
+    if not program_exists(program_name):
+        raise ProgramIsNotInstalledError(program_name)
 
 
 def program_exists(program_name):
@@ -53,7 +81,7 @@ def _handle_arg(cmd, o, t, kwargs, option_none=False):
     mandatory = (o[-1] == '*') and True or False
     value = (key in kwargs) and kwargs[key] or None
     if mandatory and value is None:
-        sys.exit('%s: %s is a mandatory argument' % (cmd, key))
+        raise MandatoryArgumentError(cmd, key)
     if option_none:
         option = None
     return {
@@ -88,7 +116,7 @@ def tool(config):
         log_k = conf['log']
         log = log_k in kwargs and kwargs[log_k] or None
         if log and type(log) != str:
-            sys.exit('%s: log argument "%s" must be a string' % (cmd, log_k))
+            raise LogArgumentNotStrError(cmd, log_k)
 
         args = []
         named_args = conf['args']['named']
@@ -114,8 +142,8 @@ def tool(config):
         allowable_keys.add(log_k)
         for k in kwargs:
             if k not in allowable_keys:
-                sys.exit('%s: unexpected key "%s"' % (cmd, k))
-        
+                raise UnexpectedKeyError(cmd, k)
+
         program = pipeline.add_node(cmd, log, out, type_)
         for arg in args:
             if arg['key'] in out_keys:

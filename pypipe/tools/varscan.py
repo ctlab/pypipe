@@ -1,5 +1,8 @@
 from pypipe.tools.toolsconfig import Varscan
-from pypipe.utils import tool
+from pypipe.utils import tool, check_if_program_exists
+
+
+check_if_program_exists('VarScan.jar')
 
 
 @tool

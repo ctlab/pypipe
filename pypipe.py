@@ -18,8 +18,9 @@ group.add_argument('--resetall', action='store_true',
         help='reset all pipeline nodes')
 group.add_argument('--draw', action='store',
         metavar='IMG_NAME', help='draw pipeline to svg file')
+group.add_argument('--renamefile', action='store', nargs=2,
+        metavar=['1' '2'], help='draw pipeline to svg file')
 _args = parser.parse_args()
-
 
 from pypipe.core import pipeline
 from pypipe.formats import *
@@ -41,4 +42,8 @@ elif _args.resetall:
 elif _args.draw:
     pipeline.load(_args.database)
     pipeline.draw(_args.draw)
+elif _args.renamefile:
+    pipeline.load(_args.database)
+    pipeline.rename_file()
+    pipeline.save(_args.database)
 

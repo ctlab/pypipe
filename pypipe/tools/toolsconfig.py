@@ -955,7 +955,7 @@ class Test:
             'out': {
                 'redirect': False,
                 'return': [
-                    {'arg': 'out', 'type': {'-1': formats.Fasta, '': formats.Fastq}, 'suffix': '1'},
+                    {'arg': 'out', 'type': {'-1': formats.Fasta, '': formats.Fastq}, 'suffix': ''},
                 ],
             },
             'args': {
@@ -963,7 +963,7 @@ class Test:
                     '-1': bool,
                 },
                 'unnamed': [
-                    ('in_*', [formats.Fastq, 3, ' ']),
+                    ('in_*', [formats.Fastq, 3, ',']),
                     ('out*', str),
                 ],
             }

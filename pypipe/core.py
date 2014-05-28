@@ -7,32 +7,64 @@ import tempfile
 
 from pypipe import formats
 from pypipe.paths import PYPIPE_DIR
-import database
-import abstractfile
+import pypipe.database
+import pypipe.basefile
+import pypipe.baseexception
 
 
 COMPLETE, FAILED, RUNNING, NONE = range(4)
 
 
-def add_arg_error_msg(name, type_, option=None):
-    option = option and ('"' + option + '"') or 'argument'
-    if issubclass(type_, abstractfile.File):
-        t = type_.__name__.upper() + ' file'
-    else:
-        t = type_ + ' value'
-    return '%s: %s must be %s' % (name, option, t)
+class WrongArgumentTypeError(pypipe.baseexception.BaseException):
+
+    def __init__(self, name, type_, option=None):
+        option = option and ('"' + option + '"') or 'argument'
+        if issubclass(type_, pypipe.basefile.File):
+            t = type_.__name__.upper() + ' file'
+        else:
+            t = type_ + ' value'
+        value = '%s: %s must be %s' % (name, option, t)
+        super(WrongArgumentTypeError, self).__init__(value)
 
 
-def add_args_error_msg(name, type_, option=None):
-    if option:
-        msg = ': "%s" must be ' % option
-    else:
-        msg = ': expected list of '
-    if issubclass(type_, abstractfile.File):
-        t = type_.__name__.upper() + ' file'
-    else:
-        t = type_ + ' value'
-    return name + msg + t
+class WrongArgumentsTypeError(pypipe.baseexception.BaseException):
+
+    def __init__(self, name, type_, option=None):
+        if option:
+            msg = ': "%s" must be ' % option
+        else:
+            msg = ': expected list of '
+        if issubclass(type_, pypipe.basefile.File):
+            t = type_.__name__.upper() + ' file'
+        else:
+            t = type_ + ' value'
+        value =  name + msg + t
+        super(WrongArgumentsTypeError, self).__init__(value)
+
+
+class ArgumentListTooShortError(pypipe.baseexception.BaseException):
+
+    def __init__(self, name, min_len):
+        value = '%s: list length must be >= %d' % (name, min_len)
+        super(ArgumentListTooShortError, self).__init__(value)
+
+
+class FileAlreadyExistsError(pypipe.baseexception.BaseException):
+
+    def __init__(self, file_):
+        if file_.suff:
+            value = 'One or more files with names "%s" is already exists in pipeline' % \
+                    (', '.join(file_.names()))
+        else:
+            value = 'File with name "%s" is already exists in pipeline' % (file_.path)
+        super(FileAlreadyExistsError, self).__init__(value)
+
+
+class FileIsNotInputError(pypipe.baseexception.BaseException):
+
+    def __init__(self, file_):
+        value = 'File "%s" is not input file' % file_.path
+        super(FileIsNotInputError, self).__init__(value)
 
 
 class PipelineNode:
@@ -58,16 +90,25 @@ class PipelineNode:
     def thread_function(self):
         log = open(self.log, 'w')
         out = open(self.out, 'w')
+        cmd = []
+        for arg in self.cmd:
+            if type(arg) == int:
+                cmd_arg = pipeline.files[arg].path
+                cmd.append(cmd_arg)
+            elif type(arg) == list:
+                cmd_arg = arg[-1].join([pipeline.files[i].path for i in arg[:-1]])
+                cmd.append(cmd_arg)
+            else:
+                cmd.append(arg)
         self.status = RUNNING
         try:
-            status = subprocess.call(self.cmd, stdout=out, stderr=log)
+            status = subprocess.call(cmd, stdout=out, stderr=log)
         except OSError:
             self.join_pypipe_path()
-            status = subprocess.call(self.cmd, stdout=out, stderr=log)
+            status = subprocess.call(cmd, stdout=out, stderr=log)
         out.close()
         log.close()
-        msg = ' '.join(self.cmd) + (out.name != log.name and (
-            ' > ' + out.name) or '')
+        msg = ' '.join(cmd) + (out.name != log.name and (' > ' + out.name) or '')
         if status == 0:
             self.status = COMPLETE
             sys.stderr.write('"%s" complete\n' % msg)
@@ -108,13 +149,12 @@ class PipelineNode:
         if type(value) == int and type_ == float:
             value = float(value)
         if type(value) != type_:
-            error_msg = add_arg_error_msg(self.name, type_, option)
-            sys.exit(error_msg)
+            raise WrongArgumentTypeError(self.name, type_, option)
         if option:
             self.cmd.append(option)
-        if isinstance(value, abstractfile.File):
-            self.cmd.append(value.path)
+        if isinstance(value, pypipe.basefile.File):
             pipeline.add_edge(self, value)
+            self.cmd.append(value.number)
         elif type(value) != bool:
             self.cmd.append(str(value))
 
@@ -122,25 +162,25 @@ class PipelineNode:
         if value is None:
             return
         if type(value) != list and type(value) != tuple:
-            error_msg = add_args_error_msg(self.name, type_, option)
-            sys.exit(error_msg)
+            raise WrongArgumentsTypeError(self.name, type_, option)
         if len(value) < min_len:
-            error_msg = '%s: list length must be >= %d' % (self.name, min_len)
-            sys.exit(error_msg)
-        if not option:
-            for v in value:
-                self.add_arg(v, type_)
+            raise ArgumentListTooShortError(self.name, min_len)
+        if option:
+            self.cmd.append(option)
+        for v in value:
+            if type(v) == int and type_ == float:
+                v = float(v)
+            if type(v) != type_:
+                raise WrongArgumentsTypeError(self.name, type_, option)
+            if isinstance(v, pypipe.basefile.File):
+                pipeline.add_edge(self, v)
+        if issubclass(type_, pypipe.basefile.File):
+            arg_value = [v.number for v in value]
+            arg_value.append(delim)
+            if option:
+                self.cmd.append(option)
+            self.cmd.append(arg_value)
         else:
-            for v in value:
-                if type(v) == int and type_ == float:
-                    v = float(v)
-                if type(v) != type_:
-                    error_msg = add_args_error_msg(self.name, type_, option)
-                    sys.exit(error_msg)
-                if isinstance(v, abstractfile.File):
-                    pipeline.add_edge(self, v)
-            if issubclass(type_, abstractfile.File):
-                value = [v.path for v in value]
             self.add_arg(delim.join(map(str, value)), str, option)
 
 
@@ -151,6 +191,14 @@ class Pipeline:
         self.running = []
         self.all_programs = []
         self.files = []
+
+    def can_add_file(self, new_file):
+        for file_ in self.files:
+            if file_ != new_file:
+                for name in new_file.names():
+                    if name in file_.names():
+                        return False
+        return True
 
     def generate_to_run(self, node):
         if node.status == COMPLETE or node in self.to_run:
@@ -179,6 +227,8 @@ class Pipeline:
 
     def add_file(self, f):
         if f not in self.files:
+            if not self.can_add_file(f):
+                raise FileAlreadyExistsError(f)
             self.files.append(f)
             f.number = len(self.files) - 1
 
@@ -225,12 +275,28 @@ class Pipeline:
         for node in self.all_programs:
             node.status = NONE
 
+    def rename_file(self, i, new_name):
+        f = self.files[i]
+        if f.program:
+            raise FileIsNotInputError(f)
+        old_name = f.path
+        f.path = new_name
+        if not f.check():
+            f.path = old_name
+            raise pypipe.basefile.FileNotExistsError(
+                pypipe.basefile.File(new_name, program=None, suff=f.suff, check=False))
+        if not self.can_add_file(f):
+            f.path = old_name
+            raise FileAlreadyExistsError(new_name)
+        for p in f.next_programs:
+            p.reset()
+
     def draw(self, img_name):
         graph = 'digraph {\n'
         i = 0
         for f in self.files:
             if f.next_programs:
-                label = '%s\\n(%s)' % (f.get_name(), f.get_type())
+                label = '%s\\n(%s)\\n(%d)' % (f.get_name(), f.get_type(), f.number + 1)
                 graph += '\t%d [label="%s" shape=rect];\n' % (i, label)
                 f.graph_number = i
                 i += 1
@@ -274,7 +340,7 @@ class Pipeline:
         os.remove(dot_file)
 
     def save(self, db_name):
-        db = database.PipelineDatabase(db_name)
+        db = pypipe.database.PipelineDatabase(db_name)
         db.create_if_not_exists()
         db.truncate_all()
         for f in self.files:
@@ -285,7 +351,7 @@ class Pipeline:
         db.close()
 
     def load(self, db_name):
-        db = database.PipelineDatabase(db_name)
+        db = pypipe.database.PipelineDatabase(db_name)
         db.execute('select * from programs')
         programs = []
         for program, status, name, log, out, cmd in db.fetchall():
@@ -304,9 +370,10 @@ class Pipeline:
             c.labels[p] = label
         db.execute('select * from files')
         files = []
-        for file_, name, format_ in db.fetchall():
+        for file_, name, suff, format_ in db.fetchall():
             f = eval('formats.' + format_)(name, check=None)
             f.number = file_
+            f.suff = eval(suff)
             files.append(f)
         self.files = files
         db.execute('select * from files_programs')
@@ -318,9 +385,9 @@ class Pipeline:
         for parent, child in db.fetchall():
             p = self.all_programs[parent]
             c = self.files[child]
+            c.program = p
             p.return_files.add(c)
         db.commit()
         db.close()
 
 pipeline = Pipeline()
-

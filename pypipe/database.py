@@ -9,7 +9,7 @@ class PipelineDatabase:
 
     def create_if_not_exists(self):
         self.cursor.execute('''create table if not exists files
-        (file int, name text, format text, primary key (file))''')
+        (file int, name text, suff text, format text, primary key (file))''')
         self.cursor.execute('''create table if not exists programs
         (program int, status int, name text, log text, out text, cmd text,
         primary key(program))''')
