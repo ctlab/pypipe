@@ -6,6 +6,7 @@ import pypipe.tools.toolsconfig
 from widgets.combobox import ComboBox
 from widgets.baselistwidget import BaseListWidget
 from widgets.basetablewidget import BaseTableWidget
+from windows.argumentslistdialog import ArgumentsListDialog
 from tablecells.tableitems import SimpleImmutableItem, TypeItem
 
 
@@ -27,6 +28,7 @@ class ArgumentsTable(BaseTableWidget):
         super(ArgumentsTable, self).__init__(parent)
         self.verticalHeader().setVisible(False)
         self.setColumnCount(3)
+        self.arguments_list_dialog = ArgumentsListDialog()
 
     def generate(self, func=None):
         self.clear()
@@ -44,7 +46,7 @@ class ArgumentsTable(BaseTableWidget):
             type_ = args[name]
             item = TypeItem(type_)
             self.setItem(i, 1, item)
-            self.set_widget(i, 2, item.get_current_type(), name)
+            self.set_widget(i, 2, item.get_current_type(), name, self.arguments_list_dialog)
             i += 1
         self.sortByColumn(0, Qt.AscendingOrder)
         self.link_cells()

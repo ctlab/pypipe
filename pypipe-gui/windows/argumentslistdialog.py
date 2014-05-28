@@ -1,11 +1,18 @@
 from PyQt4.QtGui import *
 
+from widgets.basetablewidget import BaseTableWidget
+
+
+class ExpandingArgumentsTable(BaseTableWidget):
+
+    def __init__(self, parent=None):
+        super(ExpandingArgumentsTable, self).__init__(parent)
+
+
 class ArgumentsListDialog(QDialog):
 
-    def __init__(self, type_, min_len, parent=None):
+    def __init__(self, parent=None):
         super(ArgumentsListDialog, self).__init__(parent)
-        self.type_ = type_
-        self.min_len = min_len
         self.ok_button = QPushButton('OK')
         self.cancel_button = QPushButton('Cancel')
         self.table = ExpandingArgumentsTable()

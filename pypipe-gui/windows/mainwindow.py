@@ -7,7 +7,6 @@ from PyQt4.QtSvg import *
 from windows.addfiledialog import AddFileDialog
 from windows.addprogramdialog import AddProgramDialog
 from widgets.baselistwidget import BaseListWidget
-from widgets.pipelineview import PipelineView
 
 from pypipe.core import pipeline
 
