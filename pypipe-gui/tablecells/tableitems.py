@@ -12,9 +12,9 @@ class SimpleImmutableItem(QTableWidgetItem):
 class TypeItem(SimpleImmutableItem):
 
     def __init__(self, type_):
+        super(TypeItem, self).__init__('')
         self.type_ = type_
         self.current_type = type_
-        super(TypeItem, self).__init__('')
         self.change_type('')
 
     def get_current_type(self):

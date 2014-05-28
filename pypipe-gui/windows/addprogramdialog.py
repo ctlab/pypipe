@@ -1,10 +1,74 @@
+import inspect
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 import pypipe.tools.toolsconfig
 from widgets.combobox import ComboBox
-from widgets.listwidgets import MethodsList
-from widgets.tables import ArgumentsTable
+from widgets.baselistwidget import BaseListWidget
+from widgets.basetablewidget import BaseTableWidget
+from tablecells.tableitems import SimpleImmutableItem, TypeItem
+
+
+class MethodsList(BaseListWidget):
+
+    def __init__(self, parent=None):
+        super(MethodsList, self).__init__(parent)
+
+    def generate(self, tool):
+        self.clear()
+        for name, func in inspect.getmembers(tool):
+            if inspect.isfunction(func):
+                self.add_item(name, func)
+
+
+class ArgumentsTable(BaseTableWidget):
+
+    def __init__(self, parent=None):
+        super(ArgumentsTable, self).__init__(parent)
+        self.verticalHeader().setVisible(False)
+        self.setColumnCount(3)
+
+    def generate(self, func=None):
+        self.clear()
+        headers = ['Argument', 'Type', 'Value']
+        self.setHorizontalHeaderLabels(headers)
+        if func is None:
+            return
+        config = func()
+        args = config['args']['named']
+        args.update(config['args']['unnamed'])
+        self.setRowCount(len(args))
+        i = 0
+        for name in args:
+            self.setItem(i, 0, SimpleImmutableItem(name))
+            type_ = args[name]
+            item = TypeItem(type_)
+            self.setItem(i, 1, item)
+            self.set_widget(i, 2, item.get_current_type(), name)
+            i += 1
+        self.sortByColumn(0, Qt.AscendingOrder)
+        self.link_cells()
+
+    def link_cells(self):
+        mutable_types = [i for i in xrange(0, self.rowCount()) if self.item(i, 1).is_mutable()]
+        for i in mutable_types:
+            type_item = self.item(i, 1)
+            for j in xrange(0, self.rowCount()):
+                name = str(self.item(j, 0).text())
+                if name in type_item.get_type():
+                    widget = self.cellWidget(j, 2)
+                    widget.add_receiver(i)
+                    widget.value_changed.connect(self.change_type)
+
+    def change_type(self, i, k, flag):
+        k = str(k)
+        if flag:
+            key = k
+        else:
+            key = ''
+        type_cell = self.item(i, 1)
+        type_cell.change_type(key)
+        self.set_widget(i, 2, type_cell.get_current_type(), self.cellWidget(i, 2).key)
 
 
 class AddProgramDialog(QDialog):

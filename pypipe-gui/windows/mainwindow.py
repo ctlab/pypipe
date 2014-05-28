@@ -1,8 +1,12 @@
+import tempfile
+import math
 from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+from PyQt4.QtSvg import *
 
 from windows.addfiledialog import AddFileDialog
 from windows.addprogramdialog import AddProgramDialog
-from widgets.listwidgets import ListWidget
+from widgets.baselistwidget import BaseListWidget
 from widgets.pipelineview import PipelineView
 
 from pypipe.core import pipeline
@@ -13,10 +17,10 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.files_list = ListWidget()
+        self.files_list = BaseListWidget()
         self.add_file_button = QPushButton('Add file')
         self.remove_file_button = QPushButton('remove file')
-        self.programs_list = ListWidget()
+        self.programs_list = BaseListWidget()
         self.add_program_button = QPushButton('Add program')
         self.remove_program_button = QPushButton('Remove program')
         self.pipeline_view = PipelineView()
@@ -105,3 +109,27 @@ class PipelineMenu(QMenu):
 
         self.reset_all_action = QAction('Reset all', self)
         self.addAction(self.reset_all_action)
+
+
+class PipelineView(QGraphicsView):
+
+    def __init__(self, parent=None):
+        super(PipelineView, self).__init__(parent)
+        self.setScene(QGraphicsScene(self))
+        self.img_file = tempfile.NamedTemporaryFile()
+        watcher = QFileSystemWatcher(self)
+        watcher.addPath(self.img_file.name)
+        watcher.fileChanged.connect(self.update_img)
+
+    def update_img(self):
+        self.scene().clear()
+        img = QGraphicsSvgItem(self.img_file.name)
+        self.scene().addItem(img)
+
+    def draw(self):
+        pipeline.draw(self.img_file.name)
+
+    def wheelEvent(self, e):
+        factor = math.pow(1.2, e.delta() / 480.0)
+        self.scale(factor, factor)
+        e.accept()
