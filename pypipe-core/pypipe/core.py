@@ -245,7 +245,8 @@ class Pipeline:
             self.add_file(f)
 
     def run(self, i):
-        self.generate_to_run(self.all_programs[i])
+        node = self.all_programs[i]
+        self.generate_to_run(node)
         while len(self.to_run) > 0 or len(self.running) > 0:
             for program in self.to_run:
                 if program.count == 0:

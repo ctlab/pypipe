@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 from pypipe.core import pipeline 
 from pypipe.paths import PYPIPE_DIR, INSTALL_SCRIPTS_DIR
