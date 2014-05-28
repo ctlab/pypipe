@@ -306,7 +306,7 @@ class Pipeline:
         graph += '\tedge [fontsize=32];\n'
         i = 0
         for f in self.files:
-            if f.next_programs:
+            if not f.program:
                 label = '%s\\n(%s)\\n(%d)' % (f.get_name(), f.get_type(), f.number + 1)
                 graph += '\t%d [label="%s" shape=rect];\n' % (i, label)
                 f.graph_number = i

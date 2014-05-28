@@ -12,16 +12,10 @@ class SimpleImmutableItem(QTableWidgetItem):
 class TypeItem(SimpleImmutableItem):
 
     def __init__(self, type_):
-        if type(type_) == dict:
-            self.current_type = type_['']
-        else:
-            self.current_type = type_
-        if type(self.current_type) == list:
-            value = 'list of ' + self.current_type[0].__name__
-        else:
-            value = self.current_type.__name__
-        super(TypeItem, self).__init__(value)
         self.type_ = type_
+        self.current_type = type_
+        super(TypeItem, self).__init__('')
+        self.change_type('')
 
     def get_current_type(self):
         return self.current_type
@@ -33,5 +27,12 @@ class TypeItem(SimpleImmutableItem):
         return type(self.type_) == dict
 
     def change_type(self, key):
-        self.current_type = self.type_[key]
-        self.setText(self.current_type.__name__)
+        if type(self.type_) == dict:
+            self.current_type = self.type_[key]
+        if type(self.current_type) == list:
+            value = 'list of ' + self.current_type[0].__name__
+        else:
+            value = self.current_type.__name__
+        self.setText(value)
+        return value
+

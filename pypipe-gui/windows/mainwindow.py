@@ -20,9 +20,11 @@ class MainWindow(QMainWindow):
         self.add_program_button = QPushButton('Add program')
         self.remove_program_button = QPushButton('Remove program')
         self.pipeline_view = PipelineView()
-        self.menu = MainMenu()
+        self.file_menu = FileMenu()
+        self.pipeline_menu = PipelineMenu()
 
-        self.menuBar().addMenu(self.menu)
+        self.menuBar().addMenu(self.file_menu)
+        self.menuBar().addMenu(self.pipeline_menu)
         self.setWindowTitle('PyPipe')
 
         self.add_file_dialog = AddFileDialog(self)
@@ -68,25 +70,38 @@ class MainWindow(QMainWindow):
         self.files_list.remove_current_item()
 
 
-class MainMenu(QMenu):
+class FileMenu(QMenu):
 
     def __init__(self):
-        super(MainMenu, self).__init__()
+        super(FileMenu, self).__init__('&File')
 
         self.save_action = QAction('Save', self)
         self.save_action.setShortcut(QKeySequence.Save)
         self.save_action.setStatusTip('Save pipeline')
-        #self.save_action.triggered.connect()
         self.addAction(self.save_action)
 
         self.open_action = QAction('Open', self)
         self.open_action.setShortcut(QKeySequence.Open)
         self.open_action.setShortcut('Open pipeline')
-        #self.open_action.triggered.connect()
         self.addAction(self.open_action)
 
-        self.close_action = QAction('Close', self)
-        self.close_action.setShortcut(QKeySequence.Close)
+        self.close_action = QAction('Quit', self)
+        self.close_action.setShortcut(QKeySequence.Quit)
         self.close_action.setStatusTip('Close application')
-        #self.close_action.triggered.connect()
+        self.close_action.triggered.connect(QApplication.quit)
         self.addAction(self.close_action)
+
+
+class PipelineMenu(QMenu):
+
+    def __init__(self):
+        super(PipelineMenu, self).__init__('&Pipeline')
+
+        self.run_action = QAction('Run', self)
+        self.addAction(self.run_action)
+
+        self.reset_action = QAction('Reset', self)
+        self.addAction(self.reset_action)
+
+        self.reset_all_action = QAction('Reset all', self)
+        self.addAction(self.reset_all_action)

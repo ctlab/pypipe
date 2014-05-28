@@ -1,4 +1,5 @@
 from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 import pypipe.tools.toolsconfig
 from widgets.combobox import ComboBox
