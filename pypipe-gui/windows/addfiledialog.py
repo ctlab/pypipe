@@ -1,9 +1,9 @@
-import inspect
 from PyQt4.QtGui import *
 
-import formats
-from gui.widgets.combobox import ComboBox
-from pipeline import pipeline
+import pypipe.formats
+import pypipe.basefile
+from pypipe.core import pipeline
+from widgets.combobox import ComboBox
 
 
 class AddFileDialog(QDialog):
@@ -25,7 +25,7 @@ class AddFileDialog(QDialog):
         layout.addWidget(self.cancel_button, 2, 1)
         self.setLayout(layout)
 
-        self.formats_combo.add_classes_from_module(formats)
+        self.formats_combo.add_classes_from_module(pypipe.formats)
         self.connect_all()
 
     def connect_all(self):
@@ -35,8 +35,12 @@ class AddFileDialog(QDialog):
         self.ok_button.clicked.connect(self.accept)
 
     def turn_ok_button(self):
-        f = self.get_file()
-        if pipeline.can_add_file(f):
+        try:
+            f = self.get_file()
+        except pypipe.basefile.FileNotExistsError:
+            self.ok_button.setEnabled(False)
+            return
+        if pypipe.core.pipeline.can_add_file(f):
             self.ok_button.setEnabled(True)
         else:
             self.ok_button.setEnabled(False)

@@ -1,12 +1,9 @@
 from PyQt4.QtGui import *
-from PyQt4.QtCore import *
 
-import tools
-import formats
-from pipeline import pipeline
-from gui.widgets.combobox import ComboBox
-from gui.widgets.listwidgets import MethodsList
-from gui.widgets.tables import ArgumentsTable
+import pypipe.tools.toolsconfig
+from widgets.combobox import ComboBox
+from widgets.listwidgets import MethodsList
+from widgets.tables import ArgumentsTable
 
 
 class AddProgramDialog(QDialog):
@@ -41,7 +38,7 @@ class AddProgramDialog(QDialog):
         layout.addLayout(buttons_layout)
         self.setLayout(layout)
 
-        self.tools_combo.add_classes_from_module(tools)
+        self.tools_combo.add_classes_from_module(pypipe.tools.toolsconfig)
         self.connect_all()
 
     def connect_all(self):

@@ -1,9 +1,11 @@
 from PyQt4.QtGui import *
 
-from gui.windows.addfiledialog import AddFileDialog
-from gui.windows.addprogramdialog import AddProgramDialog
-from gui.widgets.listwidgets import ListWidget
-from pipeline import pipeline
+from windows.addfiledialog import AddFileDialog
+from windows.addprogramdialog import AddProgramDialog
+from widgets.listwidgets import ListWidget
+from widgets.pipelineview import PipelineView
+
+from pypipe.core import pipeline
 
 
 class MainWindow(QMainWindow):
@@ -17,7 +19,7 @@ class MainWindow(QMainWindow):
         self.programs_list = ListWidget()
         self.add_program_button = QPushButton('Add program')
         self.remove_program_button = QPushButton('Remove program')
-        self.pipeline_view = QGraphicsView()
+        self.pipeline_view = PipelineView()
         self.menu = MainMenu()
 
         self.menuBar().addMenu(self.menu)
@@ -52,17 +54,18 @@ class MainWindow(QMainWindow):
         self.add_file_button.clicked.connect(self.add_file_dialog.exec_)
         self.remove_file_button.clicked.connect(self.remove_file_from_pipeline)
         self.add_file_dialog.accepted.connect(
-            lambda: self.add_file_to_pipeline(self.add_file_dialog.get_file()))
+            lambda: self.add_new_file(self.add_file_dialog.get_file()))
         self.add_program_button.clicked.connect(self.add_program_dialog.exec_)
 
-    def add_file_to_pipeline(self, f):
-        self.files_list.add_item(f.get_str(), f)
+    def add_new_file(self, f):
+        self.files_list.add_item(f.get_name() + ' (' + f.get_type() + ')', f)
         pipeline.add_file(f)
+        self.pipeline_view.draw()
 
     def remove_file_from_pipeline(self):
+        print 'TODO'
         f = self.files_list.get_current_item()
         self.files_list.remove_current_item()
-        pipeline.remove_file(f)
 
 
 class MainMenu(QMenu):

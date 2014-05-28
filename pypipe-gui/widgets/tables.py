@@ -1,6 +1,6 @@
-import formats
-from gui.tablecells.tablewidgets import *
-from gui.tablecells.tableitems import SimpleImmutableItem, TypeItem
+import pypipe.basefile
+from tablecells.tablewidgets import *
+from tablecells.tableitems import SimpleImmutableItem, TypeItem
 
 
 class ArgumentsTable(QTableWidget):
@@ -42,7 +42,7 @@ class ArgumentsTable(QTableWidget):
             self.setCellWidget(i, 2, IntCellWidget(key))
         elif type_ == str:
             self.setCellWidget(i, 2, StrCellWidget(key))
-        elif issubclass(type_, formats._File):
+        elif issubclass(type_, pypipe.basefile.File):
             self.setCellWidget(i, 2, FileCellWidget(key, type_))
         else:
             raise SystemExit('Unknown argument type')

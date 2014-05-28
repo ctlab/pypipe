@@ -12,7 +12,7 @@ writen in [python2](https://www.python.org/).
 
 ### Instalation
     $ git clone https://github.com/semkagtn/pypipe.git
-    $ cd pypipe
+    $ cd pypipe/pypipe-core
     $ python2 setup.py build
     $ sudo python2 setup.py install
 

@@ -1,8 +1,8 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from gui.widgets.combobox import ComboBox
-from pipeline import pipeline
+from widgets.combobox import ComboBox
+from pypipe.core import pipeline
 
 
 class _AbstractCellWidget(QWidget):
@@ -69,7 +69,7 @@ class FileCellWidget(_AbstractCellWidget):
         valid_files = pipeline.get_files(type_)
         combo.add_item('None')
         for f in valid_files:
-            combo.add_item(f.get_str(), f)
+            combo.add_item(f.get_name(), f)
         super(FileCellWidget, self).__init__(key, combo, parent)
         combo.currentIndexChanged.connect(self.emit_value_changed)
 

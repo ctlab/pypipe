@@ -1,10 +1,10 @@
 from pypipe.tools import bwa, bowtie2, samtools, bcftools
 
-ref = Fasta("GRCh37.fa")
-bwa_i = BwaIndex("GRCh37.fa") 
-i = Bowtie2Index("GRCh37")
-r1 = Fastq("IonXpress_021.fastq")
-r2 = Fastq("IonXpress_022.fastq")
+ref = Fasta("GRCh37.fa", check=False)
+bwa_i = BwaIndex("GRCh37.fa", check=False) 
+i = Bowtie2Index("GRCh37", check=False)
+r1 = Fastq("IonXpress_021.fastq", check=False)
+r2 = Fastq("IonXpress_022.fastq", check=False)
 
 sam1 = bowtie2.bowtie2(_x=i, _U=[r1], _S="out1.sam", _p=4, log="bowtie_log")
 bam1 = samtools.view(in_=sam1, _o="out1.bam", _b=True, _S=True)

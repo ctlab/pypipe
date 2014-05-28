@@ -192,6 +192,11 @@ class Pipeline:
         self.all_programs = []
         self.files = []
 
+    def get_files(self, type_):
+        if type_:
+            return [f for f in self.files if type(f) == type_]
+        return self.files
+
     def can_add_file(self, new_file):
         for file_ in self.files:
             if file_ != new_file:
@@ -294,6 +299,11 @@ class Pipeline:
 
     def draw(self, img_name):
         graph = 'digraph {\n'
+        graph += '\trankdir=LR;\n'
+        graph += '\tratio="fill";\n'
+        graph += '\tsize="14.0,10.5";\n'
+        graph += '\tnode [width=2.0 height=2.0 fontsize=32];\n'
+        graph += '\tedge [fontsize=32];\n'
         i = 0
         for f in self.files:
             if f.next_programs:
