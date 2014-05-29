@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         programs_buttons_layout.addWidget(self.add_program_button)
         panel_layout.addLayout(programs_buttons_layout)
         main_layout.addWidget(self.pipeline_view, 0, 0)
-        main_layout.addLayout(panel_layout, 0, 1, 0, 6)
+        main_layout.addLayout(panel_layout, 0, 1, 1, 2)
         center = QWidget()
         center.setLayout(main_layout)
         self.setCentralWidget(center)
