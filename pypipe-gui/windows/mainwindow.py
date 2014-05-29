@@ -7,6 +7,7 @@ from PyQt4.QtSvg import *
 
 from windows.addfiledialog import AddFileDialog
 from windows.addprogramdialog import AddProgramDialog
+from windows.renamefiledialog import RenameFileDialog
 from widgets.baselistwidget import BaseListWidget
 
 from pypipe.core import pipeline
@@ -19,7 +20,7 @@ class MainWindow(QMainWindow):
 
         self.files_list = BaseListWidget()
         self.add_file_button = QPushButton('Add file')
-        self.rename_file_button = QPushButton('Rename file')
+        self.rename_file_button = QPushButton('Change file')
         self.rename_file_button.setEnabled(False)
         self.programs_list = BaseListWidget()
         self.add_program_button = QPushButton('Add program')
@@ -27,11 +28,15 @@ class MainWindow(QMainWindow):
         self.file_menu = FileMenu()
         self.pipeline_menu = PipelineMenu()
 
+        self.message_box = QMessageBox(self)
+        self.message_box.setWindowTitle('Info')
+
         self.menuBar().addMenu(self.file_menu)
         self.menuBar().addMenu(self.pipeline_menu)
         self.setWindowTitle('PyPipe')
 
         self.add_file_dialog = AddFileDialog(self)
+        self.rename_file_dialog = RenameFileDialog(self)
         self.add_program_dialog = AddProgramDialog(self)
 
         main_layout = QGridLayout()
@@ -52,18 +57,23 @@ class MainWindow(QMainWindow):
         center = QWidget()
         center.setLayout(main_layout)
         self.setCentralWidget(center)
-
         self.connect_all()
 
     def connect_all(self):
         self.add_file_button.clicked.connect(self.add_file_dialog.exec_)
-        self.rename_file_button.clicked.connect(self.rename_file)
         self.add_file_dialog.accepted.connect(
             lambda: self.add_new_file(self.add_file_dialog.get_file()))
         self.add_program_button.clicked.connect(self.add_program_dialog.exec_)
         self.add_program_dialog.accepted.connect(self.add_new_program)
+        self.rename_file_button.clicked.connect(
+            lambda: self.rename_file_dialog.exec_(self.files_list.get_current_item()))
+        self.rename_file_dialog.accepted.connect(self.rename_file)
+
+        self.files_list.currentItemChanged.connect(
+            lambda: self.turn_rename_file_button(self.files_list.get_current_item()))
 
         self.pipeline_menu.run_action.triggered.connect(self.run_pipeline)
+        self.pipeline_menu.run_all_action.triggered.connect(self.run_all_pipeline)
         self.programs_list.currentItemChanged.connect(lambda: self.pipeline_menu.turn_actions(
             self.programs_list.get_current_item()))
         self.pipeline_menu.reset_action.triggered.connect(self.reset_pipeline)
@@ -75,12 +85,16 @@ class MainWindow(QMainWindow):
     def save_pipeline(self):
         file_name = QFileDialog.getSaveFileName(self, 'Save pipeline')
         pipeline.save(str(file_name))
+        self.message_box.setText('Pipeline was saved successfully')
+        self.message_box.exec_()
 
     def open_pipeline(self):
         file_name = QFileDialog.getOpenFileName(self, 'Open pipeline')
         try:
             pipeline.load(str(file_name))
         except:
+            self.message_box.setText('Open pipeline failed')
+            self.message_box.exec_()
             return
         self.files_list.clear()
         self.programs_list.clear()
@@ -91,10 +105,18 @@ class MainWindow(QMainWindow):
         for p in pipeline.all_programs:
             self.programs_list.add_item(p.name + ' (' + str(p.number + 1) + ')', p)
         self.pipeline_view.draw()
+        self.message_box.setText('Pipeline was opened successfully')
+        self.message_box.exec_()
 
     def run_pipeline(self):
         thread = threading.Thread(target=pipeline.run,
                                   args=(self.programs_list.get_current_item().number,
+                                  self.pipeline_view.img_file.name))
+        thread.start()
+
+    def run_all_pipeline(self):
+        thread = threading.Thread(target=pipeline.run,
+                                  args=(None,
                                   self.pipeline_view.img_file.name))
         thread.start()
 
@@ -117,7 +139,18 @@ class MainWindow(QMainWindow):
         self.pipeline_view.draw()
 
     def rename_file(self):
-        print 'TODO'
+        pipeline.rename_file(self.files_list.get_current_item().number,
+                             str(self.rename_file_dialog.filename_edit.text()))
+        f = self.files_list.get_current_item()
+        self.files_list.currentItem().setText(f.get_name() + ' (' + f.get_type() + ')' + \
+                                 ' (' + str(f.number + 1) + ')')
+        self.pipeline_view.draw()
+
+    def turn_rename_file_button(self, f):
+        if f is not None:
+            self.rename_file_button.setEnabled(True)
+        else:
+            self.rename_file_button.setEnabled(False)
 
 
 class FileMenu(QMenu):
@@ -150,6 +183,9 @@ class PipelineMenu(QMenu):
         self.run_action = QAction('Run', self)
         self.run_action.setEnabled(False)
         self.addAction(self.run_action)
+
+        self.run_all_action = QAction('Run all', self)
+        self.addAction(self.run_all_action)
 
         self.reset_action = QAction('Reset', self)
         self.reset_action.setEnabled(False)

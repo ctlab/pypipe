@@ -47,6 +47,7 @@ class ArgumentsTable(BaseTableWidget):
         unnamed = self.config['args']['unnamed']
         for k, v in unnamed:
             args[k] = v
+        args[self.config['log']] = str
         self.setRowCount(len(args))
         i = 0
         for name in args:

@@ -214,6 +214,11 @@ class Pipeline:
         for parent in node.parents:
             self.generate_to_run(parent)
 
+    def generate_to_run_all(self):
+        for program in self.all_programs:
+            if program.status != COMPLETE:
+                self.to_run.add(program)
+
     def remove_children_from_to_run(self, node):
         for child in node.children:
             try:
@@ -249,10 +254,13 @@ class Pipeline:
             f.next_programs.add(p)
             self.add_file(f)
 
-    def run(self, i, img=None):
+    def run(self, i=None, img=None):
         draw = False
-        node = self.all_programs[i]
-        self.generate_to_run(node)
+        if i:
+            node = self.all_programs[i]
+            self.generate_to_run(node)
+        else:
+            self.generate_to_run_all()
         while len(self.to_run) > 0 or len(self.running) > 0:
             for program in self.to_run:
                 if program.count == 0:

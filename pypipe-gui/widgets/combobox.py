@@ -21,3 +21,6 @@ class ComboBox(QComboBox):
         if self.currentIndex() == -1:
             return None
         return self.data[self.currentIndex()]
+
+    def get_item(self, i):
+        return self.data[i]

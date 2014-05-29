@@ -12,6 +12,7 @@ class AddFileDialog(QDialog):
         super(AddFileDialog, self).__init__(parent)
         self.formats_combo = ComboBox()
         self.filename_edit = QLineEdit()
+        self.open_button = QPushButton('Open')
         self.ok_button = QPushButton('&OK')
         self.cancel_button = QPushButton('&Cancel')
 
@@ -21,6 +22,7 @@ class AddFileDialog(QDialog):
         top_layout.addWidget(self.formats_combo)
         top_layout.addWidget(QLabel('<b>File Name:</b>'))
         top_layout.addWidget(self.filename_edit)
+        top_layout.addWidget(self.open_button)
         bottom_layout = QHBoxLayout()
         bottom_layout.addWidget(self.ok_button)
         bottom_layout.addWidget(self.cancel_button)
@@ -34,9 +36,10 @@ class AddFileDialog(QDialog):
 
     def connect_all(self):
         self.cancel_button.clicked.connect(self.reject)
-        self.filename_edit.textEdited.connect(self.turn_ok_button)
+        self.filename_edit.textChanged.connect(self.turn_ok_button)
         self.formats_combo.currentIndexChanged.connect(self.turn_ok_button)
         self.ok_button.clicked.connect(self.accept)
+        self.open_button.clicked.connect(self.open_file)
 
     def turn_ok_button(self):
         try:
@@ -50,6 +53,10 @@ class AddFileDialog(QDialog):
         else:
             self.ok_button.setEnabled(False)
 
+    def open_file(self):
+        file_name = QFileDialog.getOpenFileName(self, 'Open file')
+        self.filename_edit.setText(file_name)
+
     def get_file(self):
         init = self.formats_combo.get_current_item()
         path = str(self.filename_edit.text())
@@ -58,4 +65,3 @@ class AddFileDialog(QDialog):
     def exec_(self):
         self.turn_ok_button()
         super(AddFileDialog, self).exec_()
-

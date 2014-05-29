@@ -21,6 +21,11 @@ run.add_argument('pipeline', metavar="PIPELINE",
 run.add_argument('n', metavar='N', type=int,
         help='program node number that you need to run')
 
+run_all = subparsers.add_parser('run-all',
+        help='run all nodes in pipeline')
+run_all.add_argument('pipeline', metavar="PIPELINE",
+        help='pipeline file')
+
 reset = subparsers.add_parser('reset',
         help='reset pipeline node')
 reset.add_argument('pipeline', metavar="PIPELINE",
@@ -66,6 +71,13 @@ elif _args.subparser == 'run':
     except Exception as e:
         print e
     pipeline.save(_args.pipeline)
+elif _args.subparser == 'run-all':
+    try:
+        pipeline.load(_args.pipeline)
+        pipeline.run()
+    except Exception as e:
+        print e
+    pipeline.save(_args.pipeline)
 elif _args.subparser == 'reset':
     try:
         pipeline.load(_args.pipeline)
@@ -86,10 +98,10 @@ elif _args.subparser == 'draw':
         pipeline.draw(_args.img)
     except Exception as e:
         print e
-elif _args.subparser == 'rename-file':
+elif _args.subparser == 'change-file':
     try:
         pipeline.load(_args.pipeline)
-        pipeline.rename_file(_args.n - 1, _args.new_name)
+        pipeline.change_file(_args.n - 1, _args.new_name)
     except Exception as e:
         print e
     pipeline.save(_args.pipeline)
