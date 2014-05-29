@@ -249,12 +249,14 @@ class Pipeline:
             f.next_programs.add(p)
             self.add_file(f)
 
-    def run(self, i):
+    def run(self, i, img=None):
+        draw = False
         node = self.all_programs[i]
         self.generate_to_run(node)
         while len(self.to_run) > 0 or len(self.running) > 0:
             for program in self.to_run:
                 if program.count == 0:
+                    draw = True
                     self.running.append(program)
                     program.run()
             for program in self.running:
@@ -265,12 +267,15 @@ class Pipeline:
             running = [program for program in self.running]
             for program in running:
                 if not program.thread.is_alive():
-                    #self.draw('img.svg')  # debug
+                    draw = True
                     self.running.remove(program)
                     for child in program.children:
                         child.count -= 1
                     if program.status == FAILED:
                         self.remove_children_from_to_run(program)
+            if img and draw:
+                self.draw(img)
+                draw = False
             time.sleep(1)
 
     def reset(self, i):
@@ -306,7 +311,7 @@ class Pipeline:
         graph += '\tedge [fontsize=32];\n'
         i = 0
         for f in self.files:
-            if not f.program:
+            if f.next_programs:
                 label = '%s\\n(%s)\\n(%d)' % (f.get_name(), f.get_type(), f.number + 1)
                 graph += '\t%d [label="%s" shape=rect];\n' % (i, label)
                 f.graph_number = i

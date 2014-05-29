@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-from pypipe.core import pipeline 
+from pypipe.core import pipeline, FileAlreadyExistsError
 from pypipe.paths import PYPIPE_DIR, INSTALL_SCRIPTS_DIR
 from pypipe.formats import *
 import pypipe.baseexception
@@ -166,6 +166,7 @@ def tool(config):
             file_ = init(name, program)
             return_values.append(file_)
             pipeline.add_file(file_)
+
         if len(return_values) == 1:
             return return_values[0]
         return return_values

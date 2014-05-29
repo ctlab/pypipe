@@ -3,11 +3,12 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 import pypipe.tools.toolsconfig
+import pypipe.utils
 from widgets.combobox import ComboBox
 from widgets.baselistwidget import BaseListWidget
 from widgets.basetablewidget import BaseTableWidget
-from windows.argumentslistdialog import ArgumentsListDialog
 from tablecells.tableitems import SimpleImmutableItem, TypeItem
+from windows.argumentslistdialog import ArgumentsListDialog
 
 
 class MethodsList(BaseListWidget):
@@ -24,11 +25,13 @@ class MethodsList(BaseListWidget):
 
 class ArgumentsTable(BaseTableWidget):
 
+    value_changed = pyqtSignal()
+
     def __init__(self, parent=None):
         super(ArgumentsTable, self).__init__(parent)
-        self.verticalHeader().setVisible(False)
         self.setColumnCount(3)
-        self.arguments_list_dialog = ArgumentsListDialog()
+        self.mandatory = []
+        self.config = None
 
     def generate(self, func=None):
         self.clear()
@@ -36,9 +39,14 @@ class ArgumentsTable(BaseTableWidget):
         self.setHorizontalHeaderLabels(headers)
         if func is None:
             return
-        config = func()
-        args = config['args']['named']
-        args.update(config['args']['unnamed'])
+        self.config = func()
+        args = {}
+        named = self.config['args']['named']
+        for k in named:
+            args[k] = named[k]
+        unnamed = self.config['args']['unnamed']
+        for k, v in unnamed:
+            args[k] = v
         self.setRowCount(len(args))
         i = 0
         for name in args:
@@ -46,10 +54,19 @@ class ArgumentsTable(BaseTableWidget):
             type_ = args[name]
             item = TypeItem(type_)
             self.setItem(i, 1, item)
-            self.set_widget(i, 2, item.get_current_type(), name, self.arguments_list_dialog)
+            t = item.get_current_type()
+            if type(t) == list:
+                self.set_widget(i, 2, t, name, ArgumentsListDialog(t))
+            else:
+                self.set_widget(i, 2, t, name)
+            self.cellWidget(i, 2).value_changed2.connect(self.value_changed)
             i += 1
         self.sortByColumn(0, Qt.AscendingOrder)
         self.link_cells()
+        for i in xrange(0, self.rowCount()):
+            key = str(self.item(i, 0).text())
+            if key[-1] == '*':
+                self.mandatory.append(i)
 
     def link_cells(self):
         mutable_types = [i for i in xrange(0, self.rowCount()) if self.item(i, 1).is_mutable()]
@@ -70,7 +87,27 @@ class ArgumentsTable(BaseTableWidget):
             key = ''
         type_cell = self.item(i, 1)
         type_cell.change_type(key)
-        self.set_widget(i, 2, type_cell.get_current_type(), self.cellWidget(i, 2).key)
+        t = type_cell.get_current_type()
+        if type(t) == list:
+            self.set_widget(i, 2, t, self.cellWidget(i, 2).key, ArgumentsListDialog(t))
+        else:
+            self.set_widget(i, 2, t, self.cellWidget(i, 2).key)
+
+    def all_mandatory_true(self):
+        for i in self.mandatory:
+            if not self.cellWidget(i, 2).is_true():
+                return False
+        return True
+
+    def get_parameters(self):
+        params = {}
+        for i in xrange(0, self.rowCount()):
+            w = self.cellWidget(i, 2)
+            if w.is_true():
+                k = str(self.item(i, 0).text())
+                k = k.replace('-', '_').replace('*', '')
+                params[k] = w.get_real_value()
+        return params
 
 
 class AddProgramDialog(QDialog):
@@ -115,8 +152,21 @@ class AddProgramDialog(QDialog):
             lambda: self.methods_list.generate(self.tools_combo.get_current_item()))
         self.methods_list.currentItemChanged.connect(
             lambda: self.arguments_table.generate(self.methods_list.get_current_item()))
+        self.arguments_table.value_changed.connect(self.turn_ok_button)
+
+    def turn_ok_button(self):
+        if self.arguments_table.all_mandatory_true():
+            self.ok_button.setEnabled(True)
+        else:
+            self.ok_button.setEnabled(False)
+
+    def accept(self):
+        program_func = pypipe.utils.tool(lambda: self.arguments_table.config)
+        program_func(**(self.arguments_table.get_parameters()))
+        super(AddProgramDialog, self).accept()
 
     def exec_(self):
+        self.ok_button.setEnabled(False)
         self.tools_combo.currentIndexChanged.emit(0)
         self.arguments_table.generate()
         super(AddProgramDialog, self).exec_()

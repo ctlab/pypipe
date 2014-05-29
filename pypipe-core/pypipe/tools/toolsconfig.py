@@ -902,7 +902,7 @@ class Test:
     @staticmethod
     def one_one():
         return {
-            'cmd': 'true',
+            'cmd': 'true one_one',
             'type': None,
             'log': 'log',
             'out': {
@@ -925,7 +925,7 @@ class Test:
     @staticmethod
     def one_two():
         return {
-            'cmd': 'true',
+            'cmd': 'true one_two',
             'type': None,
             'log': 'log',
             'out': {
@@ -949,7 +949,7 @@ class Test:
     @staticmethod
     def three_one():
         return {
-            'cmd': 'true',
+            'cmd': 'true three_one',
             'type': None,
             'log': 'log',
             'out': {

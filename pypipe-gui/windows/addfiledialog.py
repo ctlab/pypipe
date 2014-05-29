@@ -41,6 +41,7 @@ class AddFileDialog(QDialog):
     def turn_ok_button(self):
         try:
             f = self.get_file()
+            self.ok_button.setEnabled(True)
         except pypipe.basefile.FileNotExistsError:
             self.ok_button.setEnabled(False)
             return
