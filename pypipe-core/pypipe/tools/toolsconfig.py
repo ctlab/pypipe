@@ -64,10 +64,10 @@ class Bcftools:
             'args': {
                 'named': {
                 },
-                'unnamed': {
-                    'in_*': formats.Bcf,
-                    'out*': str,
-                },
+                'unnamed': [
+                    ('in_*', formats.Bcf),
+                    ('out*', str),
+                ],
             }
         }
 

@@ -122,7 +122,6 @@ class AddProgramDialog(QDialog):
         self.ok_button.setText('OK')
         self.cancel_button = QPushButton()
         self.cancel_button.setText('Cancel')
-
         self.setWindowTitle('Add program')
 
         layout = QVBoxLayout()

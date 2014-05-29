@@ -22,5 +22,5 @@ writen in [python2](https://www.python.org/).
 *   **How to add support of new tool:** see pypipe/tools/\* files
 *   **How to create pipeline:** `./pypipe.py create example.py pipeline`
 *   **How to draw pipeline to img:** `./pypipe.py draw pipeline img.svg`
-*   **How to run pipeline:** `./pypipe.py run pipeline 8`
+*   **How to run pipeline:** `./pypipe.py run-all pipeline`
 
