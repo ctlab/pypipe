@@ -349,7 +349,7 @@ class Pipeline:
                              (p.graph_number, c.graph_number, label)
             else:
                 for f in p.return_files:
-                    label = '%s\\n(%s)' % (f.path, f.__class__.__name__)
+                    label = '%s\\n(%s)' % (f.get_name(), f.__class__.__name__)
                     graph += '\t%d [label="%s" shape=rect];\n' % (i, label)
                     graph += '\t%d -> %d;\n' % (p.graph_number, i)
                     i += 1

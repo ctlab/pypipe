@@ -40,6 +40,7 @@ class ArgumentsTable(BaseTableWidget):
         if func is None:
             return
         self.config = func()
+        out_keys = set([value['arg'] for value in self.config['out']['return']])
         args = {}
         named = self.config['args']['named']
         for k in named:
@@ -56,7 +57,10 @@ class ArgumentsTable(BaseTableWidget):
             item = TypeItem(type_)
             self.setItem(i, 1, item)
             t = item.get_current_type()
-            if type(t) == list:
+            real_name = name.replace('-', '_').replace('*', '')
+            if real_name in out_keys:
+                self.set_widget(i, 2, 'out', name)
+            elif type(t) == list:
                 self.set_widget(i, 2, t, name, ArgumentsListDialog(t))
             else:
                 self.set_widget(i, 2, t, name)
