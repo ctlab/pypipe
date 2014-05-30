@@ -18,6 +18,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
+        self.run_thread = None
+
         self.files_list = BaseListWidget()
         self.add_file_button = QPushButton('Add file')
         self.rename_file_button = QPushButton('Change file')
@@ -60,27 +62,47 @@ class MainWindow(QMainWindow):
         self.connect_all()
 
     def connect_all(self):
-        self.add_file_button.clicked.connect(self.add_file_dialog.exec_)
+        self.add_file_button.clicked.connect(
+            lambda: self.save_exec(self.add_file_dialog.exec_))
         self.add_file_dialog.accepted.connect(
             lambda: self.add_new_file(self.add_file_dialog.get_file()))
-        self.add_program_button.clicked.connect(self.add_program_dialog.exec_)
+        self.add_program_button.clicked.connect(
+            lambda: self.save_exec(self.add_program_dialog.exec_))
         self.add_program_dialog.accepted.connect(self.add_new_program)
         self.rename_file_button.clicked.connect(
-            lambda: self.rename_file_dialog.exec_(self.files_list.get_current_item()))
+            lambda: self.save_exec(
+                lambda: self.rename_file_dialog.exec_(self.files_list.get_current_item())))
         self.rename_file_dialog.accepted.connect(self.rename_file)
 
         self.files_list.currentItemChanged.connect(
             lambda: self.turn_rename_file_button(self.files_list.get_current_item()))
 
-        self.pipeline_menu.run_action.triggered.connect(self.run_pipeline)
-        self.pipeline_menu.run_all_action.triggered.connect(self.run_all_pipeline)
-        self.programs_list.currentItemChanged.connect(lambda: self.pipeline_menu.turn_actions(
+        self.pipeline_menu.run_action.triggered.connect(
+            lambda: self.save_exec(self.run_pipeline))
+        self.pipeline_menu.run_all_action.triggered.connect(
+            lambda: self.save_exec(self.run_all_pipeline))
+        self.programs_list.currentItemChanged.connect(
+            lambda: self.pipeline_menu.turn_actions(
             self.programs_list.get_current_item()))
-        self.pipeline_menu.reset_action.triggered.connect(self.reset_pipeline)
-        self.pipeline_menu.reset_all_action.triggered.connect(self.reset_all_pipeline)
+        self.pipeline_menu.reset_action.triggered.connect(
+            lambda: self.save_exec(self.reset_pipeline))
+        self.pipeline_menu.reset_all_action.triggered.connect(
+            lambda: self.save_exec(self.reset_all_pipeline))
 
-        self.file_menu.save_action.triggered.connect(self.save_pipeline)
-        self.file_menu.open_action.triggered.connect(self.open_pipeline)
+        self.file_menu.save_action.triggered.connect(
+            lambda: self.save_exec(self.save_pipeline))
+        self.file_menu.open_action.triggered.connect(
+            lambda: self.save_exec(self.open_pipeline))
+
+    def save_exec(self, func):
+        if self.run_thread and self.run_thread.is_alive():
+            self.pipeline_is_running_msg()
+            return
+        func()
+
+    def pipeline_is_running_msg(self):
+        self.message_box.setText('Pipeline is running')
+        self.message_box.exec_()
 
     def save_pipeline(self):
         file_name = QFileDialog.getSaveFileName(self, 'Save pipeline')
@@ -109,16 +131,16 @@ class MainWindow(QMainWindow):
         self.message_box.exec_()
 
     def run_pipeline(self):
-        thread = threading.Thread(target=pipeline.run,
+        self.run_thread = threading.Thread(target=pipeline.run,
                                   args=(self.programs_list.get_current_item().number,
                                   self.pipeline_view.img_file.name))
-        thread.start()
+        self.run_thread.start()
 
     def run_all_pipeline(self):
-        thread = threading.Thread(target=pipeline.run,
+        self.run_thread = threading.Thread(target=pipeline.run,
                                   args=(None,
                                   self.pipeline_view.img_file.name))
-        thread.start()
+        self.run_thread.start()
 
     def reset_pipeline(self):
         pipeline.reset(self.programs_list.get_current_item().number)

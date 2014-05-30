@@ -84,8 +84,8 @@ class PipelineNode:
         self.bin_index = 0
         self.thread = None
 
-    def join_pypipe_path(self):
-        self.cmd[self.bin_index] = os.path.join(PYPIPE_DIR, self.cmd[self.bin_index])
+    def join_pypipe_path(self, cmd):
+        cmd[self.bin_index] = os.path.join(PYPIPE_DIR, cmd[self.bin_index])
 
     def thread_function(self):
         log = open(self.log, 'w')
@@ -100,11 +100,10 @@ class PipelineNode:
                 cmd.append(cmd_arg)
             else:
                 cmd.append(arg)
-        self.status = RUNNING
         try:
             status = subprocess.call(cmd, stdout=out, stderr=log)
         except OSError:
-            self.join_pypipe_path()
+            self.join_pypipe_path(cmd)
             status = subprocess.call(cmd, stdout=out, stderr=log)
         out.close()
         log.close()
@@ -117,6 +116,7 @@ class PipelineNode:
             sys.stderr.write('"%s" failed\n' % msg)
 
     def run(self):
+        self.status = RUNNING
         self.thread = threading.Thread(target=self.thread_function, args=())
         self.thread.start()
 
@@ -165,8 +165,6 @@ class PipelineNode:
             raise WrongArgumentsTypeError(self.name, type_, option)
         if len(value) < min_len:
             raise ArgumentListTooShortError(self.name, min_len)
-        if option:
-            self.cmd.append(option)
         for v in value:
             if type(v) == int and type_ == float:
                 v = float(v)
@@ -256,7 +254,9 @@ class Pipeline:
 
     def run(self, i=None, img=None):
         draw = False
-        if i:
+        self.to_run = set()
+        self.running = []
+        if i is not None:
             node = self.all_programs[i]
             self.generate_to_run(node)
         else:

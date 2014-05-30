@@ -35,6 +35,7 @@ class ArgumentsTable(BaseTableWidget):
 
     def generate(self, func=None):
         self.clear()
+        self.mandatory = []
         headers = ['Argument', 'Type', 'Value']
         self.setHorizontalHeaderLabels(headers)
         if func is None:
@@ -57,7 +58,7 @@ class ArgumentsTable(BaseTableWidget):
             item = TypeItem(type_)
             self.setItem(i, 1, item)
             t = item.get_current_type()
-            real_name = name.replace('-', '_').replace('*', '')
+            real_name = name.replace('*', '')
             if real_name in out_keys:
                 self.set_widget(i, 2, 'out', name)
             elif type(t) == list:
