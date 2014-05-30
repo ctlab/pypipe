@@ -20,11 +20,15 @@ run.add_argument('pipeline', metavar="PIPELINE",
         help='pipeline file')
 run.add_argument('n', metavar='N', type=int,
         help='program node number that you need to run')
+run.add_argument('--draw', metavar='IMG', type=str,
+        help='draw pipeline to a picture after every step')
 
 run_all = subparsers.add_parser('run-all',
         help='run all nodes in pipeline')
 run_all.add_argument('pipeline', metavar="PIPELINE",
         help='pipeline file')
+run_all.add_argument('--draw', metavar='IMG', type=str,
+        help='draw pipeline to a picture after every step')
 
 reset = subparsers.add_parser('reset',
         help='reset pipeline node')
@@ -67,14 +71,20 @@ if _args.subparser == 'create':
 elif _args.subparser == 'run':
     try:
         pipeline.load(_args.pipeline)
-        pipeline.run(_args.n - 1)
+        if _args.draw:
+            pipeline.run(_args.n - 1, _args.draw)
+        else:
+            pipeline.run(_args.n - 1)
     except Exception as e:
         print e
     pipeline.save(_args.pipeline)
 elif _args.subparser == 'run-all':
     try:
         pipeline.load(_args.pipeline)
-        pipeline.run()
+        if _args.draw:
+            pipeline.run(img=_arg.draw)
+        else:
+            pipeline.run()
     except Exception as e:
         print e
     pipeline.save(_args.pipeline)
