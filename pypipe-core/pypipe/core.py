@@ -216,6 +216,8 @@ class Pipeline:
         for program in self.all_programs:
             if program.status != COMPLETE:
                 self.to_run.add(program)
+                parents = [p for p in program.parents if p.status != COMPLETE]
+                program.count = len(parents)
 
     def remove_children_from_to_run(self, node):
         for child in node.children:
