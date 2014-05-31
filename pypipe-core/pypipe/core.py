@@ -96,10 +96,16 @@ class PipelineNode:
                 cmd_arg = pipeline.files[arg].path
                 cmd.append(cmd_arg)
             elif type(arg) == list:
-                cmd_arg = arg[-1].join([pipeline.files[i].path for i in arg[:-1]])
-                cmd.append(cmd_arg)
+                if arg[-1] == ' ':
+                    for i in arg[:-1]:
+                        cmd_arg = pipeline.files[i].path
+                        cmd.append(cmd_arg)
+                else:
+                    cmd_arg = arg[-1].join([pipeline.files[i].path for i in arg[:-1]])
+                    cmd.append(cmd_arg)
             else:
                 cmd.append(arg)
+        print 'cmd', cmd
         try:
             status = subprocess.call(cmd, stdout=out, stderr=log)
         except OSError:

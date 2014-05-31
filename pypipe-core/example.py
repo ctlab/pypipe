@@ -14,5 +14,6 @@ sam2 = bwa.bwasw(ref=bwa_i, in1=r2, out="out2.sam", log="bwa_log")
 bam2 = samtools.view(in_=sam2, _o="out2.bam", _b=True, _S=True)
 s_bam2 = samtools.sort(in_=bam2, out="sorted2")
 
-bcf = samtools.mpileup(in_=[s_bam1, s_bam2], out="out.bcf", _u=True, _f=ref)
+bcf = samtools.mpileup(in_=[s_bam1, s_bam2], out="out.bcf", _u=True, _f=ref,
+        log='mpileup_log')
 vcf = bcftools.view(in_=bcf, out="out.vcf")
